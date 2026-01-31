@@ -7,12 +7,14 @@ import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.lazy.grid.GridCells
+import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
+import androidx.compose.foundation.lazy.grid.itemsIndexed
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Search
@@ -25,6 +27,8 @@ import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -41,7 +45,7 @@ import com.example.who_is_that_pokemon.ui.theme.White
 import com.example.who_is_that_pokemon.ui.viewmodel.HomeViewModel
 
 @Composable
-fun HomeView(homeViewModel: HomeViewModel) {
+fun HomeView(viewModel: HomeViewModel) {
 
     Scaffold(
         content = { padding ->
@@ -50,16 +54,17 @@ fun HomeView(homeViewModel: HomeViewModel) {
                     .fillMaxSize()
                     .padding(padding)
             ) {
-                MainView()
+                MainView(viewModel)
             }
         }
     )
 }
 
 @Composable
-fun MainView() {
+fun MainView(viewModel: HomeViewModel) {
 
     val searchHeight = 56.dp
+    val allPokemon by viewModel.displayedPokemon.observeAsState(emptyList())
 
     Column(
         modifier = Modifier
@@ -140,22 +145,34 @@ fun MainView() {
 
         Spacer(modifier = Modifier.height(16.dp))
 
-        Row(
-            modifier = Modifier
-                .fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(5.dp)
-        ) {
-            PokemonItem(Modifier.weight(1f))
-            PokemonItem(Modifier.weight(1f))
-        }
+            if (allPokemon.isNullOrEmpty())
+            {
+
+            } else{
+                LazyVerticalGrid(
+                    columns = GridCells.Fixed(2),
+                    modifier = Modifier.fillMaxSize(),
+                ) {
+                    itemsIndexed(allPokemon) { index, pokemon ->
+                        PokemonItem(
+                            name = pokemon.name,
+                            id = index
+                        )
+                    }
+                }
+            }
     }
 }
 
 @Composable
-fun PokemonItem(modifier: Modifier) {
+fun PokemonItem(name : String, id: Int) {
+
+    val idInPokedex = id + 1;
 
     Column(
-        modifier = modifier
+        modifier = Modifier
             .heightIn(min = 200.dp)
+            .padding(4.dp)
             .background(PurpleGrey40, RoundedCornerShape(20.dp))
             .padding(12.dp),
         horizontalAlignment = Alignment.CenterHorizontally,
@@ -175,12 +192,12 @@ fun PokemonItem(modifier: Modifier) {
         Spacer(modifier = Modifier.height(24.dp))
 
         Text(
-            text = "Pikachu".replaceFirstChar { it.uppercase() },
+            text = name.replaceFirstChar { it.uppercase() },
             style = MaterialTheme.typography.titleMedium
         )
 
         Text(
-            text = "1",
+            text = idInPokedex.toString(),
             style = MaterialTheme.typography.bodyMedium,
             color = Color.Gray
         )
