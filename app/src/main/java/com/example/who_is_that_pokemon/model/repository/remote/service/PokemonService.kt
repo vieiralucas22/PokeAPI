@@ -6,6 +6,7 @@ import com.example.who_is_that_pokemon.model.entity.SpecieDetails
 import retrofit2.Response
 import retrofit2.http.GET
 import retrofit2.http.Path
+import retrofit2.http.Query
 
 interface PokemonService {
 
@@ -21,4 +22,8 @@ interface PokemonService {
     @GET("pokemon-species/{name}")
     suspend fun getPokemonSpecieByName(@Path("name") name: String): Response<SpecieDetails>
 
+    @GET("pokemon")
+    suspend fun getNext20Pokemon(
+        @Query("offset") offset: Int,
+        @Query("limit") limit: Int): Response<InitialPokemonResponse>
 }

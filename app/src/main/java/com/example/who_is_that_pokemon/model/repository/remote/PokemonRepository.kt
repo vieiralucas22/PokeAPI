@@ -54,4 +54,10 @@ class PokemonRepository(application: Application) : BaseRepository(application) 
         return null
     }
 
+    suspend fun getNext20Pokemon(offset : Int, limit : Int) : Response<InitialPokemonResponse>
+    {
+        return safeApiCall {
+            pokemonService.getNext20Pokemon(offset, limit)
+        }
+    }
 }

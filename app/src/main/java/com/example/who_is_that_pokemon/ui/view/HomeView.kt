@@ -15,6 +15,7 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.itemsIndexed
+import androidx.compose.foundation.lazy.grid.rememberLazyGridState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Search
@@ -27,8 +28,11 @@ import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -39,6 +43,7 @@ import androidx.compose.ui.unit.sp
 import coil.compose.AsyncImage
 import com.example.who_is_that_pokemon.R
 import com.example.who_is_that_pokemon.model.entity.Pokemon
+import com.example.who_is_that_pokemon.ui.animation.LoadingAnimation
 import com.example.who_is_that_pokemon.ui.theme.PokemonRed
 import com.example.who_is_that_pokemon.ui.theme.SearchBackground
 import com.example.who_is_that_pokemon.ui.theme.White
@@ -62,14 +67,30 @@ fun HomeView(viewModel: HomeViewModel) {
 
 @Composable
 fun MainView(viewModel: HomeViewModel) {
-
     val searchHeight = 56.dp
     val allPokemon by viewModel.displayedPokemon.observeAsState(emptyList())
+    val gridState = rememberLazyGridState()
+
+    val shouldLoadMore by remember {
+        derivedStateOf {
+            val layoutInfo = gridState.layoutInfo
+            val totalItems = layoutInfo.totalItemsCount
+            val lastVisibleItem = layoutInfo.visibleItemsInfo.lastOrNull()?.index ?: 0
+
+            lastVisibleItem >= totalItems - 5
+        }
+    }
+
+    LaunchedEffect(shouldLoadMore) {
+        if (shouldLoadMore) {
+            viewModel.loadNext20Pokemon()
+        }
+    }
 
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .padding(24.dp)
+            .padding(24.dp),
     ) {
 
         Text(
@@ -147,11 +168,14 @@ fun MainView(viewModel: HomeViewModel) {
 
             if (allPokemon.isNullOrEmpty())
             {
-
+                Column (modifier = Modifier.fillMaxSize(), horizontalAlignment = Alignment.CenterHorizontally, verticalArrangement = Arrangement.Center){
+                    LoadingAnimation(circleSize = 30.dp, spaceBetween = 20.dp, travelDistance = 20.dp)
+                }
             } else {
                 LazyVerticalGrid(
                     columns = GridCells.Fixed(2),
                     modifier = Modifier.fillMaxSize(),
+                    state = gridState,
                 ) {
                     itemsIndexed(allPokemon) { index, pokemon ->
                         PokemonItem(pokemon)

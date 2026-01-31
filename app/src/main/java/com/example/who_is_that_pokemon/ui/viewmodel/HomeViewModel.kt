@@ -7,6 +7,7 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.application
 import androidx.lifecycle.viewModelScope
+import com.example.who_is_that_pokemon.constants.RetrofitConstants
 import com.example.who_is_that_pokemon.model.entity.Pokemon
 import com.example.who_is_that_pokemon.model.entity.Sprites
 import com.example.who_is_that_pokemon.model.repository.remote.PokemonRepository
@@ -30,35 +31,71 @@ class HomeViewModel(application: Application) : AndroidViewModel(application) {
     private val _displayedPokemon = MutableLiveData(emptyList<Pokemon>())
     val displayedPokemon: LiveData<List<Pokemon>> = _displayedPokemon
 
+    private var nextPokemon: String = ""
+    private var isLoading = false
+
+    private var pokemonInScreen: MutableList<Pokemon> = mutableListOf()
+
     init {
         loadPokemon()
     }
 
-    fun loadPokemon()
-    {
-        try {
-            viewModelScope.launch {
+    fun loadPokemon() {
+        if (isLoading) return
+
+        isLoading = true
+
+        viewModelScope.launch {
+            try {
                 val response = pokemonRepository.getInitialPokemon()
 
-                if (response.isSuccessful && response.body() != null)
-                {
+                if (response.isSuccessful && response.body() != null) {
                     val body = response.body()
 
-                    if (body != null && body.pokemons.isNotEmpty())
+                    if (body != null && body.pokemons.isNotEmpty()) {
                         fillAllPokemonInfo(body.pokemons)
+                        nextPokemon = body.next20Pokemons
+                    }
                 }
-            }
-        } catch (e : Exception)
-        {
-            Toast.makeText(application, e.message, Toast.LENGTH_LONG).show()
+            } catch (e: Exception) {
+                Toast.makeText(application, e.message, Toast.LENGTH_LONG).show()
+            } finally {
+            isLoading = false
+        }
         }
     }
 
-    fun fillAllPokemonInfo(allPokemon: List<Pokemon>)
-    {
+    fun loadNext20Pokemon() {
+        if (isLoading) return
+
+        isLoading = true
+
         viewModelScope.launch {
-            for (pokemon in allPokemon)
-            {
+            try {
+
+                val (offset, limit) = getNext20PokemonInfo()
+
+                val response = pokemonRepository.getNext20Pokemon(offset,limit)
+
+                if (response.isSuccessful && response.body() != null) {
+                    val body = response.body()
+
+                    if (body != null && body.pokemons != null && body.pokemons.isNotEmpty()) {
+                        fillAllPokemonInfo(body.pokemons)
+                        nextPokemon = body.next20Pokemons
+                    }
+                }
+            } catch (e: Exception) {
+                Toast.makeText(application, e.message, Toast.LENGTH_LONG).show()
+            } finally {
+                isLoading = false
+            }
+        }
+    }
+
+    fun fillAllPokemonInfo(allPokemon: List<Pokemon>) {
+        viewModelScope.launch {
+            for (pokemon in allPokemon) {
                 val response = pokemonRepository.getPokemonByName(pokemon.name)
 
                 if (response.isSuccessful && response.body() != null) {
@@ -68,12 +105,11 @@ class HomeViewModel(application: Application) : AndroidViewModel(application) {
                 }
             }
 
-            _displayedPokemon.value = allPokemon
+            updatePokemonDisplayed(allPokemon)
         }
     }
 
-    fun fillPokemonInfo(newPokemon: Pokemon, body : Pokemon?)
-    {
+    fun fillPokemonInfo(newPokemon: Pokemon, body: Pokemon?) {
         newPokemon.weight = body?.weight!!
         newPokemon.height = body.height
         newPokemon.id = body.id
@@ -83,30 +119,25 @@ class HomeViewModel(application: Application) : AndroidViewModel(application) {
         fillPokemonColor(newPokemon)
     }
 
-    fun fillAllPokemonStats(newPokemon: Pokemon, body : Pokemon?)
-    {
+    fun fillAllPokemonStats(newPokemon: Pokemon, body: Pokemon?) {
         if (body != null && body.stats.isNotEmpty())
             newPokemon.stats = body.stats
     }
 
-    fun fillPokemonSprites(newPokemon: Pokemon, body : Pokemon?)
-    {
-        if (body != null)
-        {
+    fun fillPokemonSprites(newPokemon: Pokemon, body: Pokemon?) {
+        if (body != null) {
             newPokemon.sprites = Sprites()
             newPokemon.sprites.default = body.sprites.default
             newPokemon.sprites.shiny = body.sprites.shiny
         }
     }
 
-    fun fillPokemonTypes(newPokemon: Pokemon, body : Pokemon?)
-    {
+    fun fillPokemonTypes(newPokemon: Pokemon, body: Pokemon?) {
         if (body != null && body.types.isNotEmpty())
             newPokemon.types = body.types
     }
 
-    fun fillPokemonColor(pokemon : Pokemon)
-    {
+    fun fillPokemonColor(pokemon: Pokemon) {
         viewModelScope.launch {
             val pokemonColor = pokemonRepository.getPokemonColorByName(pokemon.name)
 
@@ -125,5 +156,31 @@ class HomeViewModel(application: Application) : AndroidViewModel(application) {
             }
         }
     }
+
+    fun getNext20PokemonInfo() : Pair<Int, Int> {
+        val query = nextPokemon.replace(RetrofitConstants.BASE_POKE_API_URL, "").substringAfter("?", "")
+        val params = query.split("&")
+            .associate {
+                val (key, value) = it.split("=")
+                key to value
+            }
+
+        val offset = params["offset"]?.toIntOrNull() ?: 0
+        val limit = params["limit"]?.toIntOrNull() ?: 20
+
+        return offset to limit
+    }
+
+    fun updatePokemonDisplayed(newPokemons : List<Pokemon>)
+    {
+        for (pokemon in newPokemons)
+        {
+            pokemonInScreen.add(pokemon)
+        }
+
+        _displayedPokemon.value = pokemonInScreen.toList()
+    }
+
+
 
 }
