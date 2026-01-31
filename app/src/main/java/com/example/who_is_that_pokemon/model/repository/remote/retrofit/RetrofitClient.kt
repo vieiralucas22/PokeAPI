@@ -1,4 +1,4 @@
-package com.example.who_is_that_pokemon.model.repository.remote
+package com.example.who_is_that_pokemon.model.repository.remote.retrofit
 
 import okhttp3.OkHttpClient
 import retrofit2.Retrofit
