@@ -15,7 +15,6 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Email
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonColors
@@ -32,7 +31,6 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.min
 import androidx.compose.ui.unit.sp
 import com.example.who_is_that_pokemon.R
 import com.example.who_is_that_pokemon.ui.theme.Pink80
@@ -40,9 +38,10 @@ import com.example.who_is_that_pokemon.ui.theme.PrimaryColorPokedex
 import com.example.who_is_that_pokemon.ui.theme.PurpleGrey40
 import com.example.who_is_that_pokemon.ui.theme.SearchBackground
 import com.example.who_is_that_pokemon.ui.theme.White
+import com.example.who_is_that_pokemon.ui.viewmodel.HomeViewModel
 
 @Composable
-fun HomeView() {
+fun HomeView(homeViewModel: HomeViewModel) {
 
     Scaffold(
         content = { padding ->
