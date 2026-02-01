@@ -24,15 +24,12 @@ import com.example.who_is_that_pokemon.ui.theme.PokemonWhite
 import com.example.who_is_that_pokemon.ui.theme.PokemonYellow
 import kotlinx.coroutines.launch
 
-class HomeViewModel(application: Application) : AndroidViewModel(application) {
-
-    private val pokemonRepository = PokemonRepository(application)
+class HomeViewModel(application: Application) : BaseViewModel(application) {
 
     private val _displayedPokemon = MutableLiveData(emptyList<Pokemon>())
     val displayedPokemon: LiveData<List<Pokemon>> = _displayedPokemon
 
     private var nextPokemon: String = ""
-    private var isLoading = false
 
     private var pokemonInScreen: MutableList<Pokemon> = mutableListOf()
 
@@ -109,7 +106,7 @@ class HomeViewModel(application: Application) : AndroidViewModel(application) {
         }
     }
 
-    fun fillPokemonInfo(newPokemon: Pokemon, body: Pokemon?) {
+    suspend fun fillPokemonInfo(newPokemon: Pokemon, body: Pokemon?) {
         newPokemon.weight = body?.weight!!
         newPokemon.height = body.height
         newPokemon.id = body.id
@@ -137,26 +134,6 @@ class HomeViewModel(application: Application) : AndroidViewModel(application) {
             newPokemon.types = body.types
     }
 
-    fun fillPokemonColor(pokemon: Pokemon) {
-        viewModelScope.launch {
-            val pokemonColor = pokemonRepository.getPokemonSpecieByName(pokemon.name)
-
-            pokemon.color = when (pokemonColor?.pokemonColor?.colorName) {
-                "red" -> PokemonRed
-                "blue" -> PokemonBlue
-                "yellow" -> PokemonYellow
-                "green" -> PokemonGreen
-                "black" -> PokemonBlack
-                "white" -> PokemonWhite
-                "gray" -> PokemonGray
-                "pink" -> PokemonPink
-                "purple" -> PokemonPurple
-                "brown" -> PokemonBrown
-                else -> PokemonDefault
-            }
-        }
-    }
-
     fun getNext20PokemonInfo() : Pair<Int, Int> {
         val query = nextPokemon.replace(RetrofitConstants.BASE_POKE_API_URL, "").substringAfter("?", "")
         val params = query.split("&")
@@ -180,7 +157,5 @@ class HomeViewModel(application: Application) : AndroidViewModel(application) {
 
         _displayedPokemon.value = pokemonInScreen.toList()
     }
-
-
 
 }

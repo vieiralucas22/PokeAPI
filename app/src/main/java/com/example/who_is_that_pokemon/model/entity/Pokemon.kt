@@ -32,8 +32,6 @@ data class TypeSlot (
 data class Type (
     @SerializedName("name")
     var name: String,
-    @SerializedName("url")
-    var url: String
 )
 
 data class Sprites(
