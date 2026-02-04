@@ -26,7 +26,7 @@ class PokemonDetailsViewModel(application: Application) : BaseViewModel(applicat
     var description by mutableStateOf("")
     var sprite by mutableStateOf("")
     var color by mutableStateOf(White)
-    var wasFound by mutableStateOf(false)
+    var shouldShowNotFoundComponent by mutableStateOf(false)
     private val _pokemonStats = MutableLiveData(emptyList<Stats>())
     val pokemonStats: LiveData<List<Stats>> = _pokemonStats
 
@@ -38,7 +38,10 @@ class PokemonDetailsViewModel(application: Application) : BaseViewModel(applicat
 
     fun loadPokemonInformation()
     {
-        if (currentPokemonName.isEmpty()) return
+        if (currentPokemonName.isEmpty()) {
+            shouldShowNotFoundComponent = true
+            return
+        }
 
         if (isLoading) return
 
@@ -63,15 +66,15 @@ class PokemonDetailsViewModel(application: Application) : BaseViewModel(applicat
                         color = pokemon.color
                         _pokemonStats.value = pokemon.stats
                         _pokemonTypes.value = pokemon.types
-                        wasFound = true
+                        shouldShowNotFoundComponent = false
                     }
                 } else
                 {
-                    wasFound = false
+                    shouldShowNotFoundComponent = true
                 }
             } catch (e : Exception)
             {
-                wasFound = false
+                shouldShowNotFoundComponent = true
                 Toast.makeText(application, e.message, Toast.LENGTH_LONG).show()
             } finally {
                 isLoading = false
@@ -117,6 +120,6 @@ class PokemonDetailsViewModel(application: Application) : BaseViewModel(applicat
         color = White
         _pokemonStats.value = emptyList()
         _pokemonTypes.value = emptyList()
-        wasFound = false
+        shouldShowNotFoundComponent = false
     }
 }

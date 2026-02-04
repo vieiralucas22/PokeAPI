@@ -77,54 +77,61 @@ fun PokemonDetailsView(viewModel: PokemonDetailsViewModel) {
 
             ) {
 
-                if (viewModel.wasFound) {
-
-                    HeaderView(viewModel)
-
-                    AsyncImage(
-                        model = viewModel.sprite,
-                        contentDescription = viewModel.pokemonName,
-                        modifier = Modifier.size(200.dp)
-                    )
-
-                    MainView(viewModel)
+                if (viewModel.isLoading) {
+                    LoadingAnimation(circleSize = 50.dp, travelDistance = 40.dp, spaceBetween = 12.dp)
                 } else {
+                    if (viewModel.shouldShowNotFoundComponent) {
+                        NotFoundPokemonComponent()
+                    } else {
+                        HeaderView(viewModel)
 
-                    Column(
-                        modifier = Modifier.padding(24.dp),
-                        horizontalAlignment = Alignment.CenterHorizontally,
-                        verticalArrangement = Arrangement.Center
-                    ) {
-
-                        Text(
-                            text = "Pokemon not found!",
-                            style = MaterialTheme.typography.titleMedium,
-                            fontSize = 24.sp,
-                            color = PokemonBlack,
-                            textAlign = TextAlign.Center
+                        AsyncImage(
+                            model = viewModel.sprite,
+                            contentDescription = viewModel.pokemonName,
+                            modifier = Modifier.size(200.dp)
                         )
 
-                        Image(
-                            modifier = Modifier.width(300.dp),
-                            painter = painterResource(R.drawable.not_found),
-                            contentDescription = "Pokemon not found"
-                        )
-
-                        Text(
-                            text = "Please back and try again.",
-                            style = MaterialTheme.typography.titleMedium,
-                            fontSize = 24.sp,
-                            color = PokemonBlack,
-                            textAlign = TextAlign.Center
-                        )
+                        MainView(viewModel)
                     }
                 }
             }
-
         }
     )
-
 }
+
+@Composable
+fun NotFoundPokemonComponent()
+{
+    Column(
+        modifier = Modifier.padding(24.dp),
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.Center
+    ) {
+
+        Text(
+            text = "Pokemon not found!",
+            style = MaterialTheme.typography.titleMedium,
+            fontSize = 24.sp,
+            color = PokemonBlack,
+            textAlign = TextAlign.Center
+        )
+
+        Image(
+            modifier = Modifier.width(300.dp),
+            painter = painterResource(R.drawable.not_found),
+            contentDescription = "Pokemon not found"
+        )
+
+        Text(
+            text = "Please back and try again.",
+            style = MaterialTheme.typography.titleMedium,
+            fontSize = 24.sp,
+            color = PokemonBlack,
+            textAlign = TextAlign.Center
+        )
+    }
+}
+
 
 @Composable
 fun HeaderView(viewModel: PokemonDetailsViewModel) {
