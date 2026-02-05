@@ -4,8 +4,7 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
-import androidx.lifecycle.ViewModelProvider
-import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.activity.viewModels
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
@@ -14,13 +13,15 @@ import com.example.who_is_that_pokemon.ui.view.HomeView
 import com.example.who_is_that_pokemon.ui.view.PokemonDetailsView
 import com.example.who_is_that_pokemon.ui.viewmodel.HomeViewModel
 import com.example.who_is_that_pokemon.ui.viewmodel.PokemonDetailsViewModel
+import dagger.hilt.android.AndroidEntryPoint
 
+@AndroidEntryPoint
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        val homeViewModel = ViewModelProvider.create(this)[HomeViewModel::class.java]
-        val pokemonDetailsViewModel = ViewModelProvider.create(this)[PokemonDetailsViewModel::class.java]
+        val homeViewModel : HomeViewModel by viewModels()
+        val pokemonDetailsViewModel : PokemonDetailsViewModel by viewModels()
 
         enableEdgeToEdge()
         setContent {

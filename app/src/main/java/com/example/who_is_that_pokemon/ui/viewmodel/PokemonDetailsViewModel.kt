@@ -7,19 +7,23 @@ import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.graphics.Color
-import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.application
 import androidx.lifecycle.viewModelScope
-import com.example.who_is_that_pokemon.model.entity.Pokemon
 import com.example.who_is_that_pokemon.model.entity.Stats
 import com.example.who_is_that_pokemon.model.entity.TypeSlot
-import com.example.who_is_that_pokemon.model.repository.remote.PokemonRepository
+import com.example.who_is_that_pokemon.model.interfaces.repository.remote.IPokemonRepository
 import com.example.who_is_that_pokemon.ui.theme.White
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
+import javax.inject.Inject
 
-class PokemonDetailsViewModel(application: Application) : BaseViewModel(application) {
+@HiltViewModel
+class PokemonDetailsViewModel @Inject constructor(
+    application: Application,
+    private val _pokemonRepository: IPokemonRepository
+) : BaseViewModel(application, _pokemonRepository) {
 
     var id by mutableIntStateOf(0)
     var pokemonName by mutableStateOf("")
@@ -36,8 +40,7 @@ class PokemonDetailsViewModel(application: Application) : BaseViewModel(applicat
 
     private var currentPokemonName = ""
 
-    fun loadPokemonInformation()
-    {
+    fun loadPokemonInformation() {
         if (currentPokemonName.isEmpty()) {
             shouldShowNotFoundComponent = true
             return
@@ -50,13 +53,12 @@ class PokemonDetailsViewModel(application: Application) : BaseViewModel(applicat
         viewModelScope.launch {
 
             try {
-                val response = pokemonRepository.getPokemonByNameOrId(currentPokemonName)
+                val response = _pokemonRepository.getPokemonByNameOrId(currentPokemonName)
 
                 if (response.isSuccessful && response.body() != null) {
-                    val specie = pokemonRepository.getPokemonSpecieByName(currentPokemonName)
+                    val specie = _pokemonRepository.getPokemonSpecieByName(currentPokemonName)
                     val pokemon = response.body()
-                    if (specie != null && pokemon != null)
-                    {
+                    if (specie != null && pokemon != null) {
                         fillPokemonColor(pokemon)
 
                         id = pokemon.id
@@ -68,12 +70,10 @@ class PokemonDetailsViewModel(application: Application) : BaseViewModel(applicat
                         _pokemonTypes.value = pokemon.types
                         shouldShowNotFoundComponent = false
                     }
-                } else
-                {
+                } else {
                     shouldShowNotFoundComponent = true
                 }
-            } catch (e : Exception)
-            {
+            } catch (e: Exception) {
                 shouldShowNotFoundComponent = true
                 Toast.makeText(application, e.message, Toast.LENGTH_LONG).show()
             } finally {
@@ -82,7 +82,7 @@ class PokemonDetailsViewModel(application: Application) : BaseViewModel(applicat
         }
     }
 
-    fun getTypeColor(color : String) : Color {
+    fun getTypeColor(color: String): Color {
         return when (color.lowercase()) {
             "fire" -> Color(0xFFF08030)
             "water" -> Color(0xFF6890F0)
@@ -106,13 +106,11 @@ class PokemonDetailsViewModel(application: Application) : BaseViewModel(applicat
         }
     }
 
-    fun setCurrentPokemonName(pokemonName: String)
-    {
+    fun setCurrentPokemonName(pokemonName: String) {
         currentPokemonName = pokemonName
     }
 
-    fun clearPokemonInfo()
-    {
+    fun clearPokemonInfo() {
         isLoading = false
         pokemonName = ""
         description = ""

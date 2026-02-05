@@ -2,7 +2,6 @@ package com.example.who_is_that_pokemon.ui.viewmodel
 
 import android.app.Application
 import android.widget.Toast
-import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.application
@@ -10,21 +9,16 @@ import androidx.lifecycle.viewModelScope
 import com.example.who_is_that_pokemon.constants.RetrofitConstants
 import com.example.who_is_that_pokemon.model.entity.Pokemon
 import com.example.who_is_that_pokemon.model.entity.Sprites
-import com.example.who_is_that_pokemon.model.repository.remote.PokemonRepository
-import com.example.who_is_that_pokemon.ui.theme.PokemonBlack
-import com.example.who_is_that_pokemon.ui.theme.PokemonBlue
-import com.example.who_is_that_pokemon.ui.theme.PokemonBrown
-import com.example.who_is_that_pokemon.ui.theme.PokemonDefault
-import com.example.who_is_that_pokemon.ui.theme.PokemonGray
-import com.example.who_is_that_pokemon.ui.theme.PokemonGreen
-import com.example.who_is_that_pokemon.ui.theme.PokemonPink
-import com.example.who_is_that_pokemon.ui.theme.PokemonPurple
-import com.example.who_is_that_pokemon.ui.theme.PokemonRed
-import com.example.who_is_that_pokemon.ui.theme.PokemonWhite
-import com.example.who_is_that_pokemon.ui.theme.PokemonYellow
+import com.example.who_is_that_pokemon.model.interfaces.repository.remote.IPokemonRepository
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
+import javax.inject.Inject
 
-class HomeViewModel(application: Application) : BaseViewModel(application) {
+@HiltViewModel
+class HomeViewModel @Inject constructor(
+    application: Application,
+    private val _pokemonRepository: IPokemonRepository
+) : BaseViewModel(application, _pokemonRepository) {
 
     private val _displayedPokemon = MutableLiveData(emptyList<Pokemon>())
     val displayedPokemon: LiveData<List<Pokemon>> = _displayedPokemon
@@ -44,7 +38,7 @@ class HomeViewModel(application: Application) : BaseViewModel(application) {
 
         viewModelScope.launch {
             try {
-                val response = pokemonRepository.getInitialPokemon()
+                val response = _pokemonRepository.getInitialPokemon()
 
                 if (response.isSuccessful && response.body() != null) {
                     val body = response.body()
@@ -57,8 +51,8 @@ class HomeViewModel(application: Application) : BaseViewModel(application) {
             } catch (e: Exception) {
                 Toast.makeText(application, e.message, Toast.LENGTH_LONG).show()
             } finally {
-            isLoading = false
-        }
+                isLoading = false
+            }
         }
     }
 
@@ -72,7 +66,7 @@ class HomeViewModel(application: Application) : BaseViewModel(application) {
 
                 val (offset, limit) = getNext20PokemonInfo()
 
-                val response = pokemonRepository.getNext20Pokemon(offset,limit)
+                val response = _pokemonRepository.getNext20Pokemon(offset, limit)
 
                 if (response.isSuccessful && response.body() != null) {
                     val body = response.body()
@@ -93,7 +87,7 @@ class HomeViewModel(application: Application) : BaseViewModel(application) {
     fun fillAllPokemonInfo(allPokemon: List<Pokemon>) {
         viewModelScope.launch {
             for (pokemon in allPokemon) {
-                val response = pokemonRepository.getPokemonByNameOrId(pokemon.name)
+                val response = _pokemonRepository.getPokemonByNameOrId(pokemon.name)
 
                 if (response.isSuccessful && response.body() != null) {
                     val body = response.body()
@@ -134,8 +128,9 @@ class HomeViewModel(application: Application) : BaseViewModel(application) {
             newPokemon.types = body.types
     }
 
-    fun getNext20PokemonInfo() : Pair<Int, Int> {
-        val query = nextPokemon.replace(RetrofitConstants.BASE_POKE_API_URL, "").substringAfter("?", "")
+    fun getNext20PokemonInfo(): Pair<Int, Int> {
+        val query =
+            nextPokemon.replace(RetrofitConstants.BASE_POKE_API_URL, "").substringAfter("?", "")
         val params = query.split("&")
             .associate {
                 val (key, value) = it.split("=")
@@ -148,10 +143,8 @@ class HomeViewModel(application: Application) : BaseViewModel(application) {
         return offset to limit
     }
 
-    fun updatePokemonDisplayed(newPokemons : List<Pokemon>)
-    {
-        for (pokemon in newPokemons)
-        {
+    fun updatePokemonDisplayed(newPokemons: List<Pokemon>) {
+        for (pokemon in newPokemons) {
             pokemonInScreen.add(pokemon)
         }
 
