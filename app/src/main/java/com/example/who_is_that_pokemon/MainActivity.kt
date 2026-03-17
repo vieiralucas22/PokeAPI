@@ -12,6 +12,7 @@ import androidx.navigation.compose.rememberNavController
 import com.example.who_is_that_pokemon.ui.Routes
 import com.example.who_is_that_pokemon.ui.view.HomeView
 import com.example.who_is_that_pokemon.ui.view.PokemonDetailsView
+import com.example.who_is_that_pokemon.ui.view.WhoIsThatPokemonView
 import com.example.who_is_that_pokemon.ui.viewmodel.HomeViewModel
 import com.example.who_is_that_pokemon.ui.viewmodel.PokemonDetailsViewModel
 import dagger.hilt.android.AndroidEntryPoint
@@ -30,7 +31,7 @@ class MainActivity : ComponentActivity() {
         setContent {
             val navController = rememberNavController()
 
-            NavHost(navController = navController, startDestination = Routes.HomeView, builder = {
+            NavHost(navController = navController, startDestination = Routes.WhoIsThatPokemonView, builder = {
 
                 composable (Routes.HomeView)
                 {
@@ -46,6 +47,11 @@ class MainActivity : ComponentActivity() {
                         pokemonDetailsViewModel.setCurrentPokemonName(name)
                         PokemonDetailsView(pokemonDetailsViewModel)
                     }
+                }
+
+                composable (Routes.WhoIsThatPokemonView)
+                {
+                    WhoIsThatPokemonView()
                 }
             })
         }
