@@ -1,10 +1,7 @@
 package com.example.who_is_that_pokemon.screens.home
 
-import android.app.Application
-import android.widget.Toast
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.application
 import androidx.lifecycle.viewModelScope
 import com.example.who_is_that_pokemon.constants.RetrofitConstants
 import com.example.who_is_that_pokemon.data.entity.Pokemon
@@ -17,9 +14,8 @@ import javax.inject.Inject
 
 @HiltViewModel
 class HomeViewModel @Inject constructor(
-    application: Application,
     private val _pokemonRepository: IPokemonRepository
-) : BaseViewModel(application) {
+) : BaseViewModel() {
 
     private val _displayedPokemon = MutableLiveData(emptyList<Pokemon>())
     val displayedPokemon: LiveData<List<Pokemon>> = _displayedPokemon
@@ -50,7 +46,7 @@ class HomeViewModel @Inject constructor(
                     }
                 }
             } catch (e: Exception) {
-                Toast.makeText(application, e.message, Toast.LENGTH_LONG).show()
+               // Toast.makeText(application, e.message, Toast.LENGTH_LONG).show()
             } finally {
                 isLoading = false
             }
@@ -78,7 +74,7 @@ class HomeViewModel @Inject constructor(
                     }
                 }
             } catch (e: Exception) {
-                Toast.makeText(application, e.message, Toast.LENGTH_LONG).show()
+               // Toast.makeText(application, e.message, Toast.LENGTH_LONG).show()
             } finally {
                 isLoading = false
             }
@@ -131,7 +127,8 @@ class HomeViewModel @Inject constructor(
 
     fun getNext20PokemonInfo(): Pair<Int, Int> {
         val query =
-            nextPokemon.replace(RetrofitConstants.Companion.BASE_POKE_API_URL, "").substringAfter("?", "")
+            nextPokemon.replace(RetrofitConstants.Companion.BASE_POKE_API_URL, "")
+                .substringAfter("?", "")
         val params = query.split("&")
             .associate {
                 val (key, value) = it.split("=")

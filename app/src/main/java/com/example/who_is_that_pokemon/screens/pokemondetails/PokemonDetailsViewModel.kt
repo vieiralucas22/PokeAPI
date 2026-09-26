@@ -1,7 +1,5 @@
 package com.example.who_is_that_pokemon.screens.pokemondetails
 
-import android.app.Application
-import android.widget.Toast
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
@@ -9,7 +7,6 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.graphics.Color
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.application
 import androidx.lifecycle.viewModelScope
 import com.example.who_is_that_pokemon.data.entity.Stats
 import com.example.who_is_that_pokemon.data.entity.TypeSlot
@@ -21,9 +18,8 @@ import javax.inject.Inject
 
 @HiltViewModel
 class PokemonDetailsViewModel @Inject constructor(
-    application: Application,
     private val _pokemonRepository: IPokemonRepository
-) : BaseViewModel(application) {
+) : BaseViewModel() {
 
     var id by mutableIntStateOf(0)
     var pokemonName by mutableStateOf("")
@@ -75,7 +71,7 @@ class PokemonDetailsViewModel @Inject constructor(
                 }
             } catch (e: Exception) {
                 shouldShowNotFoundComponent = true
-                Toast.makeText(application, e.message, Toast.LENGTH_LONG).show()
+               // Toast.makeText(application, e.message, Toast.LENGTH_LONG).show()
             } finally {
                 isLoading = false
             }

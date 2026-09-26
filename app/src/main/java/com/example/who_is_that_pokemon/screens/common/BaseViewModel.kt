@@ -1,15 +1,12 @@
 package com.example.who_is_that_pokemon.screens.common
 
-import android.app.Application
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
-import androidx.lifecycle.AndroidViewModel
+import androidx.lifecycle.ViewModel
 import com.example.who_is_that_pokemon.data.entity.Pokemon
 
-abstract class BaseViewModel (
-    application: Application,
-) : AndroidViewModel(application) {
+abstract class BaseViewModel : ViewModel() {
 
     var isLoading by mutableStateOf(false)
 
