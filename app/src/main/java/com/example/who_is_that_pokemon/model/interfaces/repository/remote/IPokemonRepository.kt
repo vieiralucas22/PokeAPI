@@ -10,7 +10,7 @@ interface IPokemonRepository {
 
     suspend fun getPokemonByNameOrId(name : String): Response<Pokemon>
 
-    suspend fun getPokemonSpecieByName(name : String): SpecieDetails?
+    suspend fun getPokemonSpecieByName(name : String):  Response<SpecieDetails>
 
     suspend fun getNext20Pokemon(offset: Int, limit: Int): Response<InitialPokemonResponse>
 }
