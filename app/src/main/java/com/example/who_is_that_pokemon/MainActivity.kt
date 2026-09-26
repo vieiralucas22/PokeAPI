@@ -25,7 +25,6 @@ class MainActivity : ComponentActivity() {
         val homeViewModel : HomeViewModel by viewModels()
         val pokemonDetailsViewModel : PokemonDetailsViewModel by viewModels()
 
-
         enableEdgeToEdge()
         setContent {
             val navController = rememberNavController()

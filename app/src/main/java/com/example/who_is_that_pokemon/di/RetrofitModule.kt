@@ -35,8 +35,7 @@ class RetrofitModule {
     }
 
     @Provides
-    fun providesPokemonService(retrofitClient: Retrofit): PokemonService
-    {
-        return retrofitClient.create(PokemonService::class.java)
-    }
+    fun providesPokemonService(retrofitClient: Retrofit): PokemonService =
+         retrofitClient.create(PokemonService::class.java)
+
 }

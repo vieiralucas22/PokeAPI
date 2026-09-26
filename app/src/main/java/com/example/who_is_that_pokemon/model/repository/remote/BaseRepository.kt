@@ -11,7 +11,7 @@ import retrofit2.Response
 abstract class BaseRepository (private val context: Context) {
 
     @RequiresPermission(Manifest.permission.ACCESS_NETWORK_STATE)
-    protected fun isConnectionAvailable() : Boolean {
+    protected fun isConnectionAvailable(): Boolean {
         val cm = context.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
         var result: Boolean
 
@@ -27,8 +27,8 @@ abstract class BaseRepository (private val context: Context) {
         return result
     }
 
-    suspend fun <T> safeApiCall(apiCall : suspend () -> Response<T>) : Response<T>{
-        if (!isConnectionAvailable()){
+    suspend fun <T> safeApiCall(apiCall : suspend () -> Response<T>) : Response<T> {
+        if (!isConnectionAvailable()) {
             throw NoInternetException("No internet available")
         }
 

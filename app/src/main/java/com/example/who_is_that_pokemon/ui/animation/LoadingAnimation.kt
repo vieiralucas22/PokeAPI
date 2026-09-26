@@ -22,7 +22,6 @@ import kotlinx.coroutines.delay
 fun LoadingAnimation(
     modifier: Modifier = Modifier,
     circleSize: Dp = 7.dp,
-    circleColor: Color = PokemonRed,
     spaceBetween: Dp = 8.dp,
     travelDistance: Dp = 10.dp
 ) {
