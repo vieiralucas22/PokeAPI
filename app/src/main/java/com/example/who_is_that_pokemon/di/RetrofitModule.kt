@@ -1,7 +1,7 @@
 package com.example.who_is_that_pokemon.di
 
 import com.example.who_is_that_pokemon.constants.RetrofitConstants
-import com.example.who_is_that_pokemon.model.repository.remote.service.PokemonService
+import com.example.who_is_that_pokemon.data.service.PokemonService
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn

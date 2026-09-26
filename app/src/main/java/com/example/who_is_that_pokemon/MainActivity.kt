@@ -9,11 +9,11 @@ import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
-import com.example.who_is_that_pokemon.ui.Routes
-import com.example.who_is_that_pokemon.ui.view.HomeView
-import com.example.who_is_that_pokemon.ui.view.PokemonDetailsView
-import com.example.who_is_that_pokemon.ui.viewmodel.HomeViewModel
-import com.example.who_is_that_pokemon.ui.viewmodel.PokemonDetailsViewModel
+import com.example.who_is_that_pokemon.screens.common.Routes
+import com.example.who_is_that_pokemon.screens.home.HomeView
+import com.example.who_is_that_pokemon.screens.pokemondetails.PokemonDetailsView
+import com.example.who_is_that_pokemon.screens.home.HomeViewModel
+import com.example.who_is_that_pokemon.screens.pokemondetails.PokemonDetailsViewModel
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint

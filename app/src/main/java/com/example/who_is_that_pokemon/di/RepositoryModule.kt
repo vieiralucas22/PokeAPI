@@ -1,7 +1,7 @@
 package com.example.who_is_that_pokemon.di
 
-import com.example.who_is_that_pokemon.model.implementation.repository.remote.PokemonRepositoryImpl
-import com.example.who_is_that_pokemon.model.interfaces.repository.remote.IPokemonRepository
+import com.example.who_is_that_pokemon.domain.repository.PokemonRepositoryImpl
+import com.example.who_is_that_pokemon.domain.repository.IPokemonRepository
 import dagger.Binds
 import dagger.Module
 import dagger.hilt.InstallIn
