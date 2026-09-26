@@ -63,7 +63,7 @@ class PokemonDetailsViewModel @Inject constructor(
 
                         id = pokemon.id
                         pokemonName = pokemon.name
-                        description = specie.descriptions[0].text
+                       // description = specie.descriptions[0].text
                         sprite = pokemon.sprites.default
                         color = pokemon.color
                         _pokemonStats.value = pokemon.stats

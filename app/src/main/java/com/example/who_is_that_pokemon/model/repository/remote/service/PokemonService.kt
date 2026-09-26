@@ -22,5 +22,6 @@ interface PokemonService {
     @GET("pokemon")
     suspend fun getNext20Pokemon(
         @Query("offset") offset: Int,
-        @Query("limit") limit: Int): Response<InitialPokemonResponse>
+        @Query("limit") limit: Int
+    ): Response<InitialPokemonResponse>
 }

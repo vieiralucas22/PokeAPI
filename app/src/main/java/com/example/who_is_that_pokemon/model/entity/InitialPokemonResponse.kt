@@ -4,9 +4,9 @@ import com.google.gson.annotations.SerializedName
 
 data class InitialPokemonResponse(
     @SerializedName("count")
-    val total : Int,
+    val total: Int,
     @SerializedName("results")
-    val pokemons : List<Pokemon>,
+    val pokemons: List<Pokemon>,
     @SerializedName("next")
     val next20Pokemons: String
 )

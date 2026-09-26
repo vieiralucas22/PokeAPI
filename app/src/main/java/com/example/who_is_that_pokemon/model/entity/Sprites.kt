@@ -4,7 +4,7 @@ import com.google.gson.annotations.SerializedName
 
 data class Sprites(
     @SerializedName("front_default")
-    var default : String = "",
+    var default: String = "",
     @SerializedName("front_shiny")
-    var shiny : String = ""
+    var shiny: String = ""
 )

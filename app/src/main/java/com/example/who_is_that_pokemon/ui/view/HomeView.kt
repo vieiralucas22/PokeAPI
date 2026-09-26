@@ -78,7 +78,7 @@ fun MainView(viewModel: HomeViewModel, navController: NavHostController) {
     val searchHeight = 56.dp
     val allPokemon by viewModel.displayedPokemon.observeAsState(emptyList())
     val gridState = rememberLazyGridState()
-    var pokemonSearch by remember { mutableStateOf("")}
+    var pokemonSearch by remember { mutableStateOf("") }
 
     val shouldLoadMore by remember {
         derivedStateOf {
@@ -135,7 +135,9 @@ fun MainView(viewModel: HomeViewModel, navController: NavHostController) {
             shape = RoundedCornerShape(16.dp),
             leadingIcon = {
                 IconButton(onClick = {
-                    navController.navigate(Routes.PokemonDetailsView + "/" + pokemonSearch.lowercase().trim())
+                    navController.navigate(
+                        Routes.PokemonDetailsView + "/" + pokemonSearch.lowercase().trim()
+                    )
                 })
                 {
                     Icon(

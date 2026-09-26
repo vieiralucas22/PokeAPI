@@ -4,5 +4,5 @@ import com.google.gson.annotations.SerializedName
 
 data class PokemonColor(
     @SerializedName("name")
-    val colorName : String,
+    val colorName: String,
 )

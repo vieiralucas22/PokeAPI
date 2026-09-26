@@ -13,6 +13,6 @@ import dagger.hilt.components.SingletonComponent
 interface RepositoryModule {
 
     @Binds
-    fun bindsPokemonRepository(impl : PokemonRepositoryImpl) : IPokemonRepository
+    fun bindsPokemonRepository(impl: PokemonRepositoryImpl): IPokemonRepository
 
 }

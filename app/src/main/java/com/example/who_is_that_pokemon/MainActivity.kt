@@ -22,8 +22,8 @@ class MainActivity : ComponentActivity() {
         installSplashScreen()
         super.onCreate(savedInstanceState)
 
-        val homeViewModel : HomeViewModel by viewModels()
-        val pokemonDetailsViewModel : PokemonDetailsViewModel by viewModels()
+        val homeViewModel: HomeViewModel by viewModels()
+        val pokemonDetailsViewModel: PokemonDetailsViewModel by viewModels()
 
         enableEdgeToEdge()
         setContent {
@@ -31,17 +31,16 @@ class MainActivity : ComponentActivity() {
 
             NavHost(navController = navController, startDestination = Routes.HomeView, builder = {
 
-                composable (Routes.HomeView)
+                composable(Routes.HomeView)
                 {
                     HomeView(homeViewModel, navController)
                 }
 
-                composable (Routes.PokemonDetailsView + "/{name}")
+                composable(Routes.PokemonDetailsView + "/{name}")
                 {
                     val name = it.arguments?.getString("name")
 
-                    if (name != null)
-                    {
+                    if (name != null) {
                         pokemonDetailsViewModel.setCurrentPokemonName(name)
                         PokemonDetailsView(pokemonDetailsViewModel)
                     }

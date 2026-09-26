@@ -5,18 +5,18 @@ import com.google.gson.annotations.SerializedName
 
 data class Pokemon(
     @SerializedName("id")
-    var id : Int,
+    var id: Int,
     @SerializedName("name")
-    val name : String,
+    val name: String,
     @SerializedName("height")
-    var height : Double,
+    var height: Double,
     @SerializedName("weight")
-    var weight : Double,
+    var weight: Double,
     @SerializedName("types")
-    var types : List<TypeSlot>,
+    var types: List<TypeSlot>,
     @SerializedName("sprites")
-    var sprites : Sprites,
+    var sprites: Sprites,
     @SerializedName("stats")
-    var stats : List<Stats>,
-    var color : Color
+    var stats: List<Stats>,
+    var color: Color
 )

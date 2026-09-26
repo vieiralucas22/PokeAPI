@@ -4,5 +4,5 @@ import com.google.gson.annotations.SerializedName
 
 data class PokemonDescription(
     @SerializedName("flavor_text")
-    var text : String
+    var text: String
 )

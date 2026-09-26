@@ -8,9 +8,9 @@ import retrofit2.Response
 interface IPokemonRepository {
     suspend fun getInitialPokemon(): Response<InitialPokemonResponse>
 
-    suspend fun getPokemonByNameOrId(name : String): Response<Pokemon>
+    suspend fun getPokemonByNameOrId(name: String): Response<Pokemon>
 
-    suspend fun getPokemonSpecieByName(name : String):  Response<SpecieDetails>
+    suspend fun getPokemonSpecieByName(name: String): Response<SpecieDetails>
 
     suspend fun getNext20Pokemon(offset: Int, limit: Int): Response<InitialPokemonResponse>
 }

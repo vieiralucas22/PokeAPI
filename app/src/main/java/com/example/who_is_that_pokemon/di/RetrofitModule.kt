@@ -27,15 +27,15 @@ class RetrofitModule {
             chain.proceed(request)
         }
 
-            return Retrofit.Builder()
-                .baseUrl(RetrofitConstants.BASE_POKE_API_URL)
-                .client(httpClient.build())
-                .addConverterFactory(GsonConverterFactory.create())
-                .build()
+        return Retrofit.Builder()
+            .baseUrl(RetrofitConstants.BASE_POKE_API_URL)
+            .client(httpClient.build())
+            .addConverterFactory(GsonConverterFactory.create())
+            .build()
     }
 
     @Provides
     fun providesPokemonService(retrofitClient: Retrofit): PokemonService =
-         retrofitClient.create(PokemonService::class.java)
+        retrofitClient.create(PokemonService::class.java)
 
 }

@@ -4,12 +4,12 @@ import com.google.gson.annotations.SerializedName
 
 data class Stats(
     @SerializedName("base_stat")
-    var value : Float,
+    var value: Float,
     @SerializedName("stat")
-    var stat : Stat
+    var stat: Stat
 )
 
 data class Stat(
     @SerializedName("name")
-    val statName : String,
+    val statName: String,
 )

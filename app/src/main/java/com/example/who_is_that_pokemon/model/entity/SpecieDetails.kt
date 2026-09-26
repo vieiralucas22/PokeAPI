@@ -4,7 +4,7 @@ import com.google.gson.annotations.SerializedName
 
 data class SpecieDetails(
     @SerializedName("color")
-    val pokemonColor : PokemonColor,
+    val pokemonColor: PokemonColor,
     @SerializedName("flavor_text_entries")
-    val descriptions : List<PokemonDescription>
+    val descriptions: List<PokemonDescription>
 )

@@ -30,19 +30,19 @@ abstract class BaseViewModel (
     protected suspend fun fillPokemonColor(pokemon: Pokemon) {
         val pokemonColor = pokemonRepository.getPokemonSpecieByName(pokemon.name)
 
-        pokemon.color = when (pokemonColor?.pokemonColor?.colorName) {
-            "red" -> PokemonRed
-            "blue" -> PokemonBlue
-            "yellow" -> PokemonYellow
-            "green" -> PokemonGreen
-            "black" -> PokemonBlack
-            "white" -> PokemonWhite
-            "gray" -> PokemonGray
-            "pink" -> PokemonPink
-            "purple" -> PokemonPurple
-            "brown" -> PokemonBrown
-            else -> PokemonDefault
-        }
+//        pokemon.color = when (pokemonColor?.pokemonColor?.colorName) {
+//            "red" -> PokemonRed
+//            "blue" -> PokemonBlue
+//            "yellow" -> PokemonYellow
+//            "green" -> PokemonGreen
+//            "black" -> PokemonBlack
+//            "white" -> PokemonWhite
+//            "gray" -> PokemonGray
+//            "pink" -> PokemonPink
+//            "purple" -> PokemonPurple
+//            "brown" -> PokemonBrown
+//            else -> PokemonDefault
+//        }
     }
 
 }
