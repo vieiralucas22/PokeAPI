@@ -15,7 +15,6 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import com.example.who_is_that_pokemon.R
-import com.example.who_is_that_pokemon.ui.theme.PokemonRed
 import kotlinx.coroutines.delay
 
 @Composable

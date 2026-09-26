@@ -33,6 +33,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.graphics.StrokeCap
+import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
@@ -42,9 +43,6 @@ import com.example.who_is_that_pokemon.R
 import com.example.who_is_that_pokemon.model.entity.Stats
 import com.example.who_is_that_pokemon.model.entity.TypeSlot
 import com.example.who_is_that_pokemon.ui.animation.LoadingAnimation
-import com.example.who_is_that_pokemon.ui.theme.PokemonBlack
-import com.example.who_is_that_pokemon.ui.theme.SearchBackground
-import com.example.who_is_that_pokemon.ui.theme.White
 import com.example.who_is_that_pokemon.ui.viewmodel.PokemonDetailsViewModel
 import kotlin.text.replaceFirstChar
 
@@ -129,7 +127,7 @@ fun NotFoundPokemonComponent() {
             text = "Pokemon not found!",
             style = MaterialTheme.typography.titleMedium,
             fontSize = 24.sp,
-            color = PokemonBlack,
+            color = colorResource(R.color.pokemon_black),
             textAlign = TextAlign.Center
         )
 
@@ -143,7 +141,7 @@ fun NotFoundPokemonComponent() {
             text = "Please back and try again.",
             style = MaterialTheme.typography.titleMedium,
             fontSize = 24.sp,
-            color = PokemonBlack,
+            color = colorResource(R.color.pokemon_black),
             textAlign = TextAlign.Center
         )
     }
@@ -164,13 +162,13 @@ fun HeaderView(viewModel: PokemonDetailsViewModel) {
             text = viewModel.pokemonName.replaceFirstChar { it.uppercase() },
             style = MaterialTheme.typography.titleMedium,
             fontSize = 32.sp,
-            color = White
+            color = colorResource(R.color.pokemon_white)
         )
 
         Text(
             text = "# " + viewModel.id,
             style = MaterialTheme.typography.titleMedium,
-            color = White,
+            color = colorResource(R.color.pokemon_white),
             fontSize = 24.sp,
         )
     }
@@ -186,7 +184,7 @@ fun MainView(viewModel: PokemonDetailsViewModel) {
         modifier = Modifier
             .fillMaxSize()
             .padding(8.dp)
-            .background(White, RoundedCornerShape(16.dp))
+            .background(colorResource(R.color.pokemon_white), RoundedCornerShape(16.dp))
             .padding(16.dp),
 
         horizontalAlignment = Alignment.CenterHorizontally
@@ -266,7 +264,7 @@ fun TypeComponent(item: TypeSlot, viewModel: PokemonDetailsViewModel) {
             text = item.type.name,
             textAlign = TextAlign.Center,
             style = MaterialTheme.typography.titleMedium,
-            color = White,
+            color = colorResource(R.color.pokemon_white),
             fontSize = 12.sp
         )
     }
@@ -295,7 +293,7 @@ fun StatusComponent(item: Stats, viewModel: PokemonDetailsViewModel) {
             modifier = Modifier
                 .fillMaxHeight()
                 .width(1.dp)
-                .background(SearchBackground)
+                .background(colorResource(R.color.search_background))
                 .weight(0.02f)
         )
 
