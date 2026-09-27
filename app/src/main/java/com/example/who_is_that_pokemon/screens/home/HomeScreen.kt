@@ -2,6 +2,7 @@ package com.example.who_is_that_pokemon.screens.home
 
 import android.annotation.SuppressLint
 import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -31,6 +32,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.colorResource
@@ -145,14 +147,23 @@ fun Content(
 
         is HomeUIState.Success ->
             PokemonGrid(uiState.data) {
-            onPokemonClick(it)
-        }
+                onPokemonClick(it)
+            }
 
-        is HomeUIState.Loading -> LoadingAnimation(
-            circleSize = 30.dp,
-            spaceBetween = 20.dp,
-            travelDistance = 20.dp
-        )
+        is HomeUIState.Loading -> {
+            Column(
+                modifier = Modifier.fillMaxSize(),
+                verticalArrangement = Arrangement.Center,
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
+                LoadingAnimation(
+                    circleSize = 30.dp,
+                    spaceBetween = 20.dp,
+                    travelDistance = 20.dp
+                )
+            }
+
+        }
 
         is HomeUIState.Error -> ErrorComponent(uiState.message)
     }
