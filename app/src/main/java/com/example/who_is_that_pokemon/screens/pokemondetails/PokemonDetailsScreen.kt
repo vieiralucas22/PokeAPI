@@ -36,6 +36,7 @@ import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil.compose.AsyncImage
@@ -43,10 +44,11 @@ import com.example.who_is_that_pokemon.R
 import com.example.who_is_that_pokemon.data.dto.StatsDTO
 import com.example.who_is_that_pokemon.data.dto.TypeSlotDTO
 import com.example.who_is_that_pokemon.dsm.animation.LoadingAnimation
+import com.example.who_is_that_pokemon.dsm.composable.ErrorComponent
 import kotlin.text.replaceFirstChar
 
 @Composable
-fun PokemonDetailsView(viewModel: PokemonDetailsViewModel) {
+fun PokemonDetailsScreen(viewModel: PokemonDetailsViewModel) {
 
     LaunchedEffect(Unit) {
         viewModel.loadPokemonInformation()
@@ -68,7 +70,6 @@ fun PokemonDetailsView(viewModel: PokemonDetailsViewModel) {
                     .background(color = viewModel.color),
                 horizontalAlignment = Alignment.CenterHorizontally,
                 verticalArrangement = Arrangement.Center
-
             ) {
 
                 if (viewModel.isLoading) {
@@ -79,7 +80,7 @@ fun PokemonDetailsView(viewModel: PokemonDetailsViewModel) {
                     )
                 } else {
                     if (viewModel.shouldShowNotFoundComponent) {
-                        NotFoundPokemonComponent()
+                        ErrorComponent("Pokemon not found!")
                     } else {
                         HeaderView(viewModel)
 
@@ -113,39 +114,6 @@ fun PokemonDetailsView(viewModel: PokemonDetailsViewModel) {
         }
     )
 }
-
-@Composable
-fun NotFoundPokemonComponent() {
-    Column(
-        modifier = Modifier.padding(24.dp),
-        horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.Center
-    ) {
-
-        Text(
-            text = "Pokemon not found!",
-            style = MaterialTheme.typography.titleMedium,
-            fontSize = 24.sp,
-            color = colorResource(R.color.pokemon_black),
-            textAlign = TextAlign.Center
-        )
-
-        Image(
-            modifier = Modifier.width(300.dp),
-            painter = painterResource(R.drawable.not_found),
-            contentDescription = "Pokemon not found"
-        )
-
-        Text(
-            text = "Please back and try again.",
-            style = MaterialTheme.typography.titleMedium,
-            fontSize = 24.sp,
-            color = colorResource(R.color.pokemon_black),
-            textAlign = TextAlign.Center
-        )
-    }
-}
-
 
 @Composable
 fun HeaderView(viewModel: PokemonDetailsViewModel) {
@@ -222,7 +190,6 @@ fun MainView(viewModel: PokemonDetailsViewModel) {
         )
 
         Spacer(Modifier.height(16.dp))
-
 
         allPokemonStats.let { stat ->
 
@@ -313,4 +280,10 @@ fun StatusComponent(item: StatsDTO, viewModel: PokemonDetailsViewModel) {
             strokeCap = StrokeCap.Round
         )
     }
+}
+
+@Preview
+@Composable
+private fun DetailsPreview() {
+
 }

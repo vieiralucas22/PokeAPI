@@ -1,16 +1,16 @@
 package com.example.who_is_that_pokemon.screens.home
 
 import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.heightIn
+import androidx.compose.foundation.layout.navigationBars
+import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.itemsIndexed
@@ -18,6 +18,7 @@ import androidx.compose.foundation.lazy.grid.rememberLazyGridState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Search
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -25,6 +26,8 @@ import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
+import androidx.compose.material3.TopAppBar
+import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.derivedStateOf
@@ -38,35 +41,64 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
-import coil.compose.AsyncImage
 import com.example.who_is_that_pokemon.R
+import com.example.who_is_that_pokemon.data.dto.InitialPokemonDTO
 import com.example.who_is_that_pokemon.data.dto.PokemonDTO
+import com.example.who_is_that_pokemon.data.dto.SpecieDetailsDTO
+import com.example.who_is_that_pokemon.domain.repository.IPokemonRepository
 import com.example.who_is_that_pokemon.screens.common.Routes
 import com.example.who_is_that_pokemon.dsm.animation.LoadingAnimation
+import com.example.who_is_that_pokemon.screens.home.composable.PokemonItem
+import retrofit2.Response
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun HomeView(viewModel: HomeViewModel, navController: NavHostController) {
-
+fun HomeScreen(
+    viewModel: HomeViewModel,
+    onPokemonClick: (String) -> Unit,
+    onSearch: (String) -> Unit
+) {
     Scaffold(
+        containerColor = colorResource(R.color.white),
+        topBar = {
+            TopAppBar(
+                modifier = Modifier.statusBarsPadding(),
+                colors = TopAppBarDefaults.topAppBarColors(
+                    containerColor = colorResource(R.color.white)
+                ),
+                title = {
+                    Text(
+                        text = "Pokedex",
+                        style = MaterialTheme.typography.titleMedium,
+                        fontSize = 40.sp,
+                        fontWeight = FontWeight.Bold
+                    )
+                })
+        },
         content = { padding ->
             Column(
                 modifier = Modifier
                     .fillMaxSize()
-                    .background(colorResource(R.color.white))
                     .padding(padding)
+                    .padding(horizontal = 20.dp)
+                    .navigationBarsPadding()
             ) {
-                MainView(viewModel, navController)
+                Content(viewModel, onPokemonClick = onPokemonClick, onSearch = onSearch)
             }
         }
     )
 }
 
 @Composable
-fun MainView(viewModel: HomeViewModel, navController: NavHostController) {
-    val searchHeight = 56.dp
+fun Content(
+    viewModel: HomeViewModel,
+    onPokemonClick: (String) -> Unit,
+    onSearch: (String) -> Unit
+) {
     val allPokemon by viewModel.displayedPokemonDTO.observeAsState(emptyList())
     val gridState = rememberLazyGridState()
     var pokemonSearch by remember { mutableStateOf("") }
@@ -87,123 +119,97 @@ fun MainView(viewModel: HomeViewModel, navController: NavHostController) {
         }
     }
 
-    Column(
+    Spacer(modifier = Modifier.height(16.dp))
+
+    Text(
+        text = "Search for a pokemon by name or using its National Number according pokedex.",
+        style = MaterialTheme.typography.bodyMedium,
+        color = Color.Gray,
+        fontSize = 16.sp,
+        fontWeight = FontWeight.SemiBold
+    )
+
+    Spacer(modifier = Modifier.height(16.dp))
+
+    OutlinedTextField(
+        value = pokemonSearch,
+        onValueChange = { pokemonSearch = it },
         modifier = Modifier
-            .fillMaxSize()
-            .padding(24.dp),
-    ) {
-
-        Text(
-            text = "Pokedex",
-            style = MaterialTheme.typography.titleMedium,
-            fontSize = 40.sp,
-            fontWeight = FontWeight.Bold
-        )
-
-        Spacer(modifier = Modifier.height(16.dp))
-
-        Text(
-            text = "Search for a pokemon by name or using its National Number according pokedex.",
-            style = MaterialTheme.typography.bodyMedium,
-            color = Color.Gray,
-            fontSize = 16.sp,
-            fontWeight = FontWeight.SemiBold
-        )
-
-        Spacer(modifier = Modifier.height(16.dp))
-
-        OutlinedTextField(
-            value = pokemonSearch,
-            onValueChange = { it ->
-                pokemonSearch = it
-            },
-            modifier = Modifier
-                .height(searchHeight)
-                .background(colorResource(R.color.search_background), RoundedCornerShape(16.dp))
-                .fillMaxWidth(),
-            placeholder = { Text("Search Pokemon") },
-            singleLine = true,
-            shape = RoundedCornerShape(16.dp),
-            leadingIcon = {
-                IconButton(onClick = {
-                    navController.navigate(
-                        Routes.PokemonDetailsView + "/" + pokemonSearch.lowercase().trim()
-                    )
-                })
-                {
-                    Icon(
-                        imageVector = Icons.Default.Search,
-                        contentDescription = "Search"
-                    )
-                }
-            }, colors = OutlinedTextFieldDefaults.colors(
-                focusedBorderColor = Color.Transparent,
-                unfocusedBorderColor = Color.Transparent,
-                disabledBorderColor = Color.Transparent,
-                errorBorderColor = Color.Transparent,
-                focusedContainerColor = colorResource(R.color.search_background),
-                unfocusedContainerColor = colorResource(R.color.search_background)
-            )
-        )
-
-        Spacer(modifier = Modifier.height(16.dp))
-
-        if (allPokemon.isNullOrEmpty()) {
-            Column(
-                modifier = Modifier.fillMaxSize(),
-                horizontalAlignment = Alignment.CenterHorizontally,
-                verticalArrangement = Arrangement.Center
-            ) {
-                LoadingAnimation(circleSize = 30.dp, spaceBetween = 20.dp, travelDistance = 20.dp)
+            .height(56.dp)
+            .background(colorResource(R.color.search_background), RoundedCornerShape(16.dp))
+            .fillMaxWidth(),
+        placeholder = { Text("Search Pokemon") },
+        singleLine = true,
+        shape = RoundedCornerShape(16.dp),
+        trailingIcon = {
+            IconButton(onClick = { onSearch(pokemonSearch.lowercase().trim()) })
+            {
+                Icon(
+                    imageVector = Icons.Default.Search,
+                    contentDescription = "Search"
+                )
             }
-        } else {
-            LazyVerticalGrid(
-                columns = GridCells.Fixed(2),
-                modifier = Modifier.fillMaxSize(),
-                state = gridState,
-            ) {
-                itemsIndexed(allPokemon) { index, pokemon ->
-                    PokemonItem(pokemon, navController)
+        }, colors = OutlinedTextFieldDefaults.colors(
+            focusedBorderColor = Color.Transparent,
+            unfocusedBorderColor = Color.Transparent,
+            disabledBorderColor = Color.Transparent,
+            errorBorderColor = Color.Transparent,
+            focusedContainerColor = colorResource(R.color.search_background),
+            unfocusedContainerColor = colorResource(R.color.search_background)
+        )
+    )
+
+    Spacer(modifier = Modifier.height(16.dp))
+
+    if (allPokemon.isEmpty()) {
+        Column(
+            modifier = Modifier.fillMaxSize(),
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.Center
+        ) {
+            LoadingAnimation(circleSize = 30.dp, spaceBetween = 20.dp, travelDistance = 20.dp)
+        }
+    } else {
+        LazyVerticalGrid(
+            columns = GridCells.Fixed(2),
+            modifier = Modifier.fillMaxSize(),
+            state = gridState,
+        ) {
+            itemsIndexed(allPokemon) { index, pokemon ->
+                PokemonItem(pokemon) { pokemonName ->
+                    onPokemonClick(pokemonName)
                 }
             }
         }
     }
 }
 
+@Preview(name = "LoadingState")
 @Composable
-fun PokemonItem(pokemonDTO: PokemonDTO, navController: NavHostController) {
-    Column(
-        modifier = Modifier
-            .heightIn(min = 200.dp)
-            .padding(4.dp)
-            .background(pokemonDTO.color, RoundedCornerShape(20.dp))
-            .padding(12.dp)
-            .clickable(onClick = {
-                navController.navigate(Routes.PokemonDetailsView + "/" + pokemonDTO.name)
-            }),
-        horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.Center
-    ) {
+private fun HomeLoadingStatePreview() {
+    val mockViewModel = HomeViewModel(object : IPokemonRepository {
+        override suspend fun getInitialPokemon(): Response<InitialPokemonDTO> {
+            TODO("Not yet implemented")
+        }
 
-        AsyncImage(
-            model = pokemonDTO.spritesDTO.default,
-            contentDescription = pokemonDTO.name,
-            modifier = Modifier.size(150.dp)
-        )
+        override suspend fun getPokemonByNameOrId(name: String): Response<PokemonDTO> {
+            TODO("Not yet implemented")
+        }
 
-        Text(
-            text = pokemonDTO.name.replaceFirstChar { it.uppercase() },
-            style = MaterialTheme.typography.titleMedium
-        )
+        override suspend fun getPokemonSpecieByName(name: String): Response<SpecieDetailsDTO> {
+            TODO("Not yet implemented")
+        }
 
-        Text(
-            text = "# " + pokemonDTO.id,
-            style = MaterialTheme.typography.bodyMedium,
-            color = Color.Gray
-        )
-
-    }
+        override suspend fun getNext20Pokemon(
+            offset: Int,
+            limit: Int
+        ): Response<InitialPokemonDTO> {
+            TODO("Not yet implemented")
+        }
+    })
+    HomeScreen(mockViewModel, onPokemonClick = {}, onSearch = {})
 }
+
 
 
 

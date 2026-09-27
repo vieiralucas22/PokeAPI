@@ -10,8 +10,8 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.example.who_is_that_pokemon.screens.common.Routes
-import com.example.who_is_that_pokemon.screens.home.HomeView
-import com.example.who_is_that_pokemon.screens.pokemondetails.PokemonDetailsView
+import com.example.who_is_that_pokemon.screens.home.HomeScreen
+import com.example.who_is_that_pokemon.screens.pokemondetails.PokemonDetailsScreen
 import com.example.who_is_that_pokemon.screens.home.HomeViewModel
 import com.example.who_is_that_pokemon.screens.pokemondetails.PokemonDetailsViewModel
 import dagger.hilt.android.AndroidEntryPoint
@@ -33,7 +33,13 @@ class MainActivity : ComponentActivity() {
 
                 composable(Routes.HomeView)
                 {
-                    HomeView(homeViewModel, navController)
+                    HomeScreen(
+                        homeViewModel,
+                        onPokemonClick = { pokemonName ->
+                            navController.navigate(Routes.PokemonDetailsView + "/" + pokemonName)
+                        }, onSearch = { search ->
+                            navController.navigate(Routes.PokemonDetailsView + "/" + search)
+                        })
                 }
 
                 composable(Routes.PokemonDetailsView + "/{name}")
@@ -42,7 +48,7 @@ class MainActivity : ComponentActivity() {
 
                     if (name != null) {
                         pokemonDetailsViewModel.setCurrentPokemonName(name)
-                        PokemonDetailsView(pokemonDetailsViewModel)
+                        PokemonDetailsScreen(pokemonDetailsViewModel)
                     }
                 }
             })
