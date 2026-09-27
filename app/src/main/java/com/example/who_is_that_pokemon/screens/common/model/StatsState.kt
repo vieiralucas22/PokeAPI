@@ -1,8 +1,8 @@
 package com.example.who_is_that_pokemon.screens.common.model
 
 data class StatsState(
-    var value: Float,
-    var stat: StatState
+    val value: Float,
+    val stat: StatState
 )
 
 data class StatState(

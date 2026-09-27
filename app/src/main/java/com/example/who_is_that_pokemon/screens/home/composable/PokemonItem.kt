@@ -21,11 +21,11 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
 import com.example.who_is_that_pokemon.R
-import com.example.who_is_that_pokemon.data.dto.PokemonDTO
-import com.example.who_is_that_pokemon.data.dto.SpritesDTO
+import com.example.who_is_that_pokemon.screens.common.model.PokemonState
+import com.example.who_is_that_pokemon.screens.common.model.SpritesState
 
 @Composable
-fun PokemonItem(pokemonDTO: PokemonDTO, onClick: (String) -> Unit) {
+fun PokemonItem(state: PokemonState, onClick: (String) -> Unit) {
 
     val isPreview = LocalInspectionMode.current
 
@@ -33,10 +33,10 @@ fun PokemonItem(pokemonDTO: PokemonDTO, onClick: (String) -> Unit) {
         modifier = Modifier
             .heightIn(min = 200.dp)
             .padding(4.dp)
-            .background(pokemonDTO.color, RoundedCornerShape(20.dp))
+            .background(state.color, RoundedCornerShape(20.dp))
             .padding(12.dp)
             .clickable(onClick = {
-                onClick(pokemonDTO.name)
+                onClick(state.name)
             }),
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center
@@ -45,24 +45,24 @@ fun PokemonItem(pokemonDTO: PokemonDTO, onClick: (String) -> Unit) {
         if (isPreview) {
             Image(
                 painter = painterResource(R.drawable.pikachu_preview),
-                contentDescription = "Pikachu",
+                contentDescription = null,
                 modifier = Modifier.size(150.dp)
             )
         } else {
             AsyncImage(
-                model = pokemonDTO.spritesDTO.default,
-                contentDescription = pokemonDTO.name,
+                model = state.spritesDTO.default,
+                contentDescription = state.name,
                 modifier = Modifier.size(150.dp)
             )
         }
 
         Text(
-            text = pokemonDTO.name.replaceFirstChar { it.uppercase() },
+            text = state.name.replaceFirstChar { it.uppercase() },
             style = MaterialTheme.typography.titleMedium
         )
 
         Text(
-            text = "# " + pokemonDTO.id,
+            text = "# " + state.id,
             style = MaterialTheme.typography.bodyMedium,
             color = Color.Gray
         )
@@ -72,13 +72,16 @@ fun PokemonItem(pokemonDTO: PokemonDTO, onClick: (String) -> Unit) {
 @Preview
 @Composable
 private fun PokemonItemPreview() {
-    val mockPokemon = PokemonDTO(
+    val mockPokemon = PokemonState(
         id = 25,
         name = "pikachu",
         height = 0.4,
         weight = 6.0,
         types = emptyList(),
-        spritesDTO = SpritesDTO(""),
+        spritesDTO = SpritesState(
+            "",
+            shiny = ""
+        ),
         stats = emptyList(),
         color = Color.Yellow
     )
