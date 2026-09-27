@@ -12,7 +12,10 @@ import retrofit2.http.Query
 interface PokemonService {
 
     @GET("pokemon")
-    suspend fun getSomePokemon(): Response<InitialPokemonDTO>
+    suspend fun getSomePokemon(
+        @Query("offset") offset: Int,
+        @Query("limit") limit: Int
+    ): Response<InitialPokemonDTO>
 
     @GET("pokemon/{nameOrId}")
     suspend fun getPokemonByNameOrId(@Path("nameOrId") nameOrId: String): Response<PokemonDTO>
@@ -20,9 +23,4 @@ interface PokemonService {
     @GET("pokemon-species/{name}")
     suspend fun getPokemonSpecieByName(@Path("name") name: String): Response<SpecieDetailsDTO>
 
-    @GET("pokemon")
-    suspend fun getNext20Pokemon(
-        @Query("offset") offset: Int,
-        @Query("limit") limit: Int
-    ): Response<InitialPokemonState>
 }

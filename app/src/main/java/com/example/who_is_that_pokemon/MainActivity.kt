@@ -48,7 +48,7 @@ class MainActivity : ComponentActivity() {
 
                     if (name != null) {
                         pokemonDetailsViewModel.setCurrentPokemonName(name)
-                        PokemonDetailsScreen(pokemonDetailsViewModel)
+                        //PokemonDetailsScreen(pokemonDetailsViewModel)
                     }
                 }
             })

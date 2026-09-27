@@ -217,25 +217,25 @@ fun MainView(viewModel: PokemonDetailsViewModel) {
 
 @Composable
 fun TypeComponent(item: TypeSlotDTO, viewModel: PokemonDetailsViewModel) {
-    Column(
-        modifier = Modifier
-            .widthIn(min = 50.dp)
-            .background(viewModel.getTypeColor(item.typeDTO.name), RoundedCornerShape(24.dp))
-            .padding(4.dp, 1.dp, 4.dp, 1.dp),
-        horizontalAlignment = Alignment.CenterHorizontally
-    )
-    {
-        Text(
-            modifier = Modifier.fillMaxWidth(),
-            text = item.typeDTO.name,
-            textAlign = TextAlign.Center,
-            style = MaterialTheme.typography.titleMedium,
-            color = colorResource(R.color.pokemon_white),
-            fontSize = 12.sp
-        )
-    }
-
-    Spacer(Modifier.width(4.dp))
+//    Column(
+//        modifier = Modifier
+//            .widthIn(min = 50.dp)
+//            .background(viewModel.getTypeColor(item.typeDTO.name), RoundedCornerShape(24.dp))
+//            .padding(4.dp, 1.dp, 4.dp, 1.dp),
+//        horizontalAlignment = Alignment.CenterHorizontally
+//    )
+//    {
+//        Text(
+//            modifier = Modifier.fillMaxWidth(),
+//            text = item.typeDTO.name,
+//            textAlign = TextAlign.Center,
+//            style = MaterialTheme.typography.titleMedium,
+//            color = colorResource(R.color.pokemon_white),
+//            fontSize = 12.sp
+//        )
+//    }
+//
+//    Spacer(Modifier.width(4.dp))
 }
 
 @Composable

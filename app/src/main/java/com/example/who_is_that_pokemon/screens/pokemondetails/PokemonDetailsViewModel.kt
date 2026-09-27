@@ -10,7 +10,7 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
 import com.example.who_is_that_pokemon.data.dto.StatsDTO
 import com.example.who_is_that_pokemon.data.dto.TypeSlotDTO
-import com.example.who_is_that_pokemon.domain.repository.IPokemonRepository
+import com.example.who_is_that_pokemon.domain.repository.PokemonRepository
 import com.example.who_is_that_pokemon.screens.common.BaseViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
@@ -18,7 +18,7 @@ import javax.inject.Inject
 
 @HiltViewModel
 class PokemonDetailsViewModel @Inject constructor(
-    private val _pokemonRepository: IPokemonRepository
+    private val _pokemonRepository: PokemonRepository
 ) : BaseViewModel() {
 
     var id by mutableIntStateOf(0)
@@ -48,33 +48,32 @@ class PokemonDetailsViewModel @Inject constructor(
 
         viewModelScope.launch {
 
-            try {
-                val response = _pokemonRepository.getPokemonByNameOrId(currentPokemonName)
-
-                if (response.isSuccessful && response.body() != null) {
-                    val specie = _pokemonRepository.getPokemonSpecieByName(currentPokemonName)
-                    val pokemon = response.body()
-                    if (specie != null && pokemon != null) {
-                        fillPokemonColor(pokemon)
-
-                        id = pokemon.id
-                        pokemonName = pokemon.name
-                       // description = specie.descriptions[0].text
-                        sprite = pokemon.spritesDTO.default
-                        color = pokemon.color
-                        _pokemonStats.value = pokemon.stats
-                        _pokemonTypes.value = pokemon.types
-                        shouldShowNotFoundComponent = false
-                    }
-                } else {
-                    shouldShowNotFoundComponent = true
-                }
-            } catch (e: Exception) {
-                shouldShowNotFoundComponent = true
-               // Toast.makeText(application, e.message, Toast.LENGTH_LONG).show()
-            } finally {
-                isLoading = false
-            }
+//            try {
+//                val response = _pokemonRepository.getPokemonByNameOrId(currentPokemonName)
+//
+//                if (response.isSuccessful && response.body() != null) {
+//                    val specie = _pokemonRepository.getPokemonSpecieByName(currentPokemonName)
+//                    val pokemon = response.body()
+//                    if (specie != null && pokemon != null) {
+//                        fillPokemonColor(pokemon)
+//
+//                        id = pokemon.id
+//                        pokemonName = pokemon.name
+//                       // description = specie.descriptions[0].text
+//                        sprite = pokemon.sprite?.default
+//                        _pokemonStats.value = pokemon.stats
+//                        _pokemonTypes.value = pokemon.types
+//                        shouldShowNotFoundComponent = false
+//                    }
+//                } else {
+//                    shouldShowNotFoundComponent = true
+//                }
+//            } catch (e: Exception) {
+//                shouldShowNotFoundComponent = true
+//               // Toast.makeText(application, e.message, Toast.LENGTH_LONG).show()
+//            } finally {
+//                isLoading = false
+//            }
         }
     }
 

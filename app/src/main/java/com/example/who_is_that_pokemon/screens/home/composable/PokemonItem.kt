@@ -16,6 +16,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalInspectionMode
+import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -33,7 +34,7 @@ fun PokemonItem(state: PokemonState, onClick: (String) -> Unit) {
         modifier = Modifier
             .heightIn(min = 200.dp)
             .padding(4.dp)
-            .background(state.color, RoundedCornerShape(20.dp))
+            .background(colorResource(R.color.pokemon_red), RoundedCornerShape(20.dp))
             .padding(12.dp)
             .clickable(onClick = {
                 onClick(state.name)
@@ -50,7 +51,7 @@ fun PokemonItem(state: PokemonState, onClick: (String) -> Unit) {
             )
         } else {
             AsyncImage(
-                model = state.spritesDTO.default,
+                model = state.sprites.default,
                 contentDescription = state.name,
                 modifier = Modifier.size(150.dp)
             )
@@ -78,12 +79,11 @@ private fun PokemonItemPreview() {
         height = 0.4,
         weight = 6.0,
         types = emptyList(),
-        spritesDTO = SpritesState(
-            "",
+        sprites = SpritesState(
+            default = "",
             shiny = ""
         ),
         stats = emptyList(),
-        color = Color.Yellow
     )
     PokemonItem(mockPokemon) {}
 }

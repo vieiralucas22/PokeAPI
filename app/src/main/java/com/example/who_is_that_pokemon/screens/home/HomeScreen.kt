@@ -1,7 +1,7 @@
 package com.example.who_is_that_pokemon.screens.home
 
+import android.annotation.SuppressLint
 import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -13,7 +13,6 @@ import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.itemsIndexed
-import androidx.compose.foundation.lazy.grid.rememberLazyGridState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Search
@@ -28,14 +27,10 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.colorResource
@@ -43,13 +38,17 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.example.who_is_that_pokemon.R
 import com.example.who_is_that_pokemon.screens.common.model.InitialPokemonState
 import com.example.who_is_that_pokemon.data.dto.PokemonDTO
 import com.example.who_is_that_pokemon.data.dto.SpecieDetailsDTO
-import com.example.who_is_that_pokemon.domain.repository.IPokemonRepository
+import com.example.who_is_that_pokemon.domain.repository.PokemonRepository
+import com.example.who_is_that_pokemon.domain.usecase.LoadPokemonUseCase
 import com.example.who_is_that_pokemon.dsm.animation.LoadingAnimation
+import com.example.who_is_that_pokemon.dsm.composable.ErrorComponent
 import com.example.who_is_that_pokemon.screens.home.composable.PokemonItem
+import com.example.who_is_that_pokemon.screens.home.model.HomeUIState
 import retrofit2.Response
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -59,6 +58,8 @@ fun HomeScreen(
     onPokemonClick: (String) -> Unit,
     onSearch: (String) -> Unit
 ) {
+    val uiState = viewModel.uiState.collectAsStateWithLifecycle().value
+
     Scaffold(
         containerColor = colorResource(R.color.white),
         topBar = {
@@ -84,7 +85,7 @@ fun HomeScreen(
                     .padding(horizontal = 20.dp)
                     .navigationBarsPadding()
             ) {
-                Content(viewModel, onPokemonClick = onPokemonClick, onSearch = onSearch)
+                Content(uiState, onPokemonClick = onPokemonClick, onSearch = onSearch)
             }
         }
     )
@@ -92,29 +93,11 @@ fun HomeScreen(
 
 @Composable
 fun Content(
-    viewModel: HomeViewModel,
+    uiState: HomeUIState,
     onPokemonClick: (String) -> Unit,
     onSearch: (String) -> Unit
 ) {
-    val allPokemon by viewModel.displayedPokemonDTO.observeAsState(emptyList())
-    val gridState = rememberLazyGridState()
     var pokemonSearch by remember { mutableStateOf("") }
-
-    val shouldLoadMore by remember {
-        derivedStateOf {
-            val layoutInfo = gridState.layoutInfo
-            val totalItems = layoutInfo.totalItemsCount
-            val lastVisibleItem = layoutInfo.visibleItemsInfo.lastOrNull()?.index ?: 0
-
-            lastVisibleItem >= totalItems - 5
-        }
-    }
-
-    LaunchedEffect(shouldLoadMore) {
-        if (shouldLoadMore) {
-//            viewModel.loadNext20Pokemon()
-        }
-    }
 
     Spacer(modifier = Modifier.height(16.dp))
 
@@ -158,50 +141,48 @@ fun Content(
 
     Spacer(modifier = Modifier.height(16.dp))
 
-    if (allPokemon.isEmpty()) {
-        Column(
-            modifier = Modifier.fillMaxSize(),
-            horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.Center
-        ) {
-            LoadingAnimation(circleSize = 30.dp, spaceBetween = 20.dp, travelDistance = 20.dp)
+    when (uiState) {
+
+        is HomeUIState.Success ->
+            PokemonGrid(uiState.data) {
+            onPokemonClick(it)
         }
-    } else {
-        LazyVerticalGrid(
-            columns = GridCells.Fixed(2),
-            modifier = Modifier.fillMaxSize(),
-            state = gridState,
-        ) {
-            itemsIndexed(allPokemon) { index, pokemon ->
-                PokemonItem(pokemon) { pokemonName ->
-                    onPokemonClick(pokemonName)
-                }
+
+        is HomeUIState.Loading -> LoadingAnimation(
+            circleSize = 30.dp,
+            spaceBetween = 20.dp,
+            travelDistance = 20.dp
+        )
+
+        is HomeUIState.Error -> ErrorComponent(uiState.message)
+    }
+}
+
+@Composable
+fun PokemonGrid(state: InitialPokemonState, onPokemonClick: (String) -> Unit) {
+
+    LazyVerticalGrid(
+        columns = GridCells.Fixed(2),
+        modifier = Modifier.fillMaxSize(),
+    ) {
+        itemsIndexed(state.allPokemon) { _, pokemon ->
+            PokemonItem(pokemon) { pokemonName ->
+                onPokemonClick(pokemonName)
             }
         }
     }
 }
 
+@SuppressLint("ViewModelConstructorInComposable")
 @Preview(name = "LoadingState")
 @Composable
 private fun HomeLoadingStatePreview() {
-    val mockViewModel = HomeViewModel(object : IPokemonRepository {
-        override suspend fun getInitialPokemon(): Response<InitialPokemonState> {
-            TODO("Not yet implemented")
-        }
-
-        override suspend fun getPokemonByNameOrId(name: String): Response<PokemonDTO> {
-            TODO("Not yet implemented")
-        }
-
-        override suspend fun getPokemonSpecieByName(name: String): Response<SpecieDetailsDTO> {
-            TODO("Not yet implemented")
-        }
-
-        override suspend fun getNext20Pokemon(
+    val mockViewModel = HomeViewModel(object : LoadPokemonUseCase {
+        override suspend fun invoke(
             offset: Int,
             limit: Int
-        ): Response<InitialPokemonState> {
-            TODO("Not yet implemented")
+        ): InitialPokemonState? {
+            TODO()
         }
     })
     HomeScreen(mockViewModel, onPokemonClick = {}, onSearch = {})

@@ -8,5 +8,5 @@ data class InitialPokemonDTO(
     @SerializedName("results")
     val allPokemon : List<PokemonDTO>,
     @SerializedName("next")
-    val next20Pokemon: String
+    val next20Pokemon: String?
 )
