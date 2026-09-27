@@ -7,7 +7,6 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.navigationBars
 import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.statusBarsPadding
@@ -44,13 +43,11 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.navigation.NavHostController
 import com.example.who_is_that_pokemon.R
-import com.example.who_is_that_pokemon.data.dto.InitialPokemonDTO
+import com.example.who_is_that_pokemon.screens.common.model.InitialPokemonState
 import com.example.who_is_that_pokemon.data.dto.PokemonDTO
 import com.example.who_is_that_pokemon.data.dto.SpecieDetailsDTO
 import com.example.who_is_that_pokemon.domain.repository.IPokemonRepository
-import com.example.who_is_that_pokemon.screens.common.Routes
 import com.example.who_is_that_pokemon.dsm.animation.LoadingAnimation
 import com.example.who_is_that_pokemon.screens.home.composable.PokemonItem
 import retrofit2.Response
@@ -188,7 +185,7 @@ fun Content(
 @Composable
 private fun HomeLoadingStatePreview() {
     val mockViewModel = HomeViewModel(object : IPokemonRepository {
-        override suspend fun getInitialPokemon(): Response<InitialPokemonDTO> {
+        override suspend fun getInitialPokemon(): Response<InitialPokemonState> {
             TODO("Not yet implemented")
         }
 
@@ -203,7 +200,7 @@ private fun HomeLoadingStatePreview() {
         override suspend fun getNext20Pokemon(
             offset: Int,
             limit: Int
-        ): Response<InitialPokemonDTO> {
+        ): Response<InitialPokemonState> {
             TODO("Not yet implemented")
         }
     })
