@@ -1,16 +1,16 @@
 package com.example.who_is_that_pokemon.domain.repository
 
-import com.example.who_is_that_pokemon.data.entity.InitialPokemonResponse
-import com.example.who_is_that_pokemon.data.entity.Pokemon
-import com.example.who_is_that_pokemon.data.entity.SpecieDetails
+import com.example.who_is_that_pokemon.data.dto.InitialPokemonDTO
+import com.example.who_is_that_pokemon.data.dto.PokemonDTO
+import com.example.who_is_that_pokemon.data.dto.SpecieDetailsDTO
 import retrofit2.Response
 
 interface IPokemonRepository {
-    suspend fun getInitialPokemon(): Response<InitialPokemonResponse>
+    suspend fun getInitialPokemon(): Response<InitialPokemonDTO>
 
-    suspend fun getPokemonByNameOrId(name: String): Response<Pokemon>
+    suspend fun getPokemonByNameOrId(name: String): Response<PokemonDTO>
 
-    suspend fun getPokemonSpecieByName(name: String): Response<SpecieDetails>
+    suspend fun getPokemonSpecieByName(name: String): Response<SpecieDetailsDTO>
 
-    suspend fun getNext20Pokemon(offset: Int, limit: Int): Response<InitialPokemonResponse>
+    suspend fun getNext20Pokemon(offset: Int, limit: Int): Response<InitialPokemonDTO>
 }

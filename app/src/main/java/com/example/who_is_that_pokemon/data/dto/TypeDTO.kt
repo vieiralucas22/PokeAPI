@@ -1,8 +1,8 @@
-package com.example.who_is_that_pokemon.data.entity
+package com.example.who_is_that_pokemon.data.dto
 
 import com.google.gson.annotations.SerializedName
 
-data class Type(
+data class TypeDTO(
     @SerializedName("name")
     var name: String,
 )

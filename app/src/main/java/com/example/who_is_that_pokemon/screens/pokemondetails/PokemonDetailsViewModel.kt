@@ -8,8 +8,8 @@ import androidx.compose.ui.graphics.Color
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
-import com.example.who_is_that_pokemon.data.entity.Stats
-import com.example.who_is_that_pokemon.data.entity.TypeSlot
+import com.example.who_is_that_pokemon.data.dto.StatsDTO
+import com.example.who_is_that_pokemon.data.dto.TypeSlotDTO
 import com.example.who_is_that_pokemon.domain.repository.IPokemonRepository
 import com.example.who_is_that_pokemon.screens.common.BaseViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -27,12 +27,12 @@ class PokemonDetailsViewModel @Inject constructor(
     var sprite by mutableStateOf("")
     var color by mutableStateOf(Color(0xFFFFFFFF))
     var shouldShowNotFoundComponent by mutableStateOf(false)
-    private val _pokemonStats = MutableLiveData(emptyList<Stats>())
-    val pokemonStats: LiveData<List<Stats>> = _pokemonStats
+    private val _pokemonStats = MutableLiveData(emptyList<StatsDTO>())
+    val pokemonStats: LiveData<List<StatsDTO>> = _pokemonStats
 
-    private val _pokemonTypes = MutableLiveData(emptyList<TypeSlot>())
+    private val _pokemonTypes = MutableLiveData(emptyList<TypeSlotDTO>())
 
-    val pokemonTypes: LiveData<List<TypeSlot>> = _pokemonTypes
+    val pokemonTypes: LiveData<List<TypeSlotDTO>> = _pokemonTypes
 
     private var currentPokemonName = ""
 
@@ -60,7 +60,7 @@ class PokemonDetailsViewModel @Inject constructor(
                         id = pokemon.id
                         pokemonName = pokemon.name
                        // description = specie.descriptions[0].text
-                        sprite = pokemon.sprites.default
+                        sprite = pokemon.spritesDTO.default
                         color = pokemon.color
                         _pokemonStats.value = pokemon.stats
                         _pokemonTypes.value = pokemon.types

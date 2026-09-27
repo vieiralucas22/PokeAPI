@@ -43,7 +43,7 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
 import coil.compose.AsyncImage
 import com.example.who_is_that_pokemon.R
-import com.example.who_is_that_pokemon.data.entity.Pokemon
+import com.example.who_is_that_pokemon.data.dto.PokemonDTO
 import com.example.who_is_that_pokemon.screens.common.Routes
 import com.example.who_is_that_pokemon.dsm.animation.LoadingAnimation
 
@@ -67,7 +67,7 @@ fun HomeView(viewModel: HomeViewModel, navController: NavHostController) {
 @Composable
 fun MainView(viewModel: HomeViewModel, navController: NavHostController) {
     val searchHeight = 56.dp
-    val allPokemon by viewModel.displayedPokemon.observeAsState(emptyList())
+    val allPokemon by viewModel.displayedPokemonDTO.observeAsState(emptyList())
     val gridState = rememberLazyGridState()
     var pokemonSearch by remember { mutableStateOf("") }
 
@@ -171,33 +171,33 @@ fun MainView(viewModel: HomeViewModel, navController: NavHostController) {
 }
 
 @Composable
-fun PokemonItem(pokemon: Pokemon, navController: NavHostController) {
+fun PokemonItem(pokemonDTO: PokemonDTO, navController: NavHostController) {
     Column(
         modifier = Modifier
             .heightIn(min = 200.dp)
             .padding(4.dp)
-            .background(pokemon.color, RoundedCornerShape(20.dp))
+            .background(pokemonDTO.color, RoundedCornerShape(20.dp))
             .padding(12.dp)
             .clickable(onClick = {
-                navController.navigate(Routes.PokemonDetailsView + "/" + pokemon.name)
+                navController.navigate(Routes.PokemonDetailsView + "/" + pokemonDTO.name)
             }),
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center
     ) {
 
         AsyncImage(
-            model = pokemon.sprites.default,
-            contentDescription = pokemon.name,
+            model = pokemonDTO.spritesDTO.default,
+            contentDescription = pokemonDTO.name,
             modifier = Modifier.size(150.dp)
         )
 
         Text(
-            text = pokemon.name.replaceFirstChar { it.uppercase() },
+            text = pokemonDTO.name.replaceFirstChar { it.uppercase() },
             style = MaterialTheme.typography.titleMedium
         )
 
         Text(
-            text = "# " + pokemon.id,
+            text = "# " + pokemonDTO.id,
             style = MaterialTheme.typography.bodyMedium,
             color = Color.Gray
         )

@@ -1,9 +1,9 @@
-package com.example.who_is_that_pokemon.data.entity
+package com.example.who_is_that_pokemon.data.dto
 
 import androidx.compose.ui.graphics.Color
 import com.google.gson.annotations.SerializedName
 
-data class Pokemon(
+data class PokemonDTO(
     @SerializedName("id")
     var id: Int,
     @SerializedName("name")
@@ -13,10 +13,10 @@ data class Pokemon(
     @SerializedName("weight")
     var weight: Double,
     @SerializedName("types")
-    var types: List<TypeSlot>,
+    var types: List<TypeSlotDTO>,
     @SerializedName("sprites")
-    var sprites: Sprites,
+    var spritesDTO: SpritesDTO,
     @SerializedName("stats")
-    var stats: List<Stats>,
+    var stats: List<StatsDTO>,
     var color: Color
 )

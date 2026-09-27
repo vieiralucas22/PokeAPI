@@ -1,12 +1,12 @@
-package com.example.who_is_that_pokemon.data.entity
+package com.example.who_is_that_pokemon.data.dto
 
 import com.google.gson.annotations.SerializedName
 
-data class InitialPokemonResponse(
+data class InitialPokemonDTO(
     @SerializedName("count")
     val total: Int,
     @SerializedName("results")
-    val pokemons: List<Pokemon>,
+    val pokemonDTOS: List<PokemonDTO>,
     @SerializedName("next")
     val next20Pokemons: String
 )

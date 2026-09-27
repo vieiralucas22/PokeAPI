@@ -1,8 +1,8 @@
 package com.example.who_is_that_pokemon.data.service
 
-import com.example.who_is_that_pokemon.data.entity.InitialPokemonResponse
-import com.example.who_is_that_pokemon.data.entity.Pokemon
-import com.example.who_is_that_pokemon.data.entity.SpecieDetails
+import com.example.who_is_that_pokemon.data.dto.InitialPokemonDTO
+import com.example.who_is_that_pokemon.data.dto.PokemonDTO
+import com.example.who_is_that_pokemon.data.dto.SpecieDetailsDTO
 import retrofit2.Response
 import retrofit2.http.GET
 import retrofit2.http.Path
@@ -11,17 +11,17 @@ import retrofit2.http.Query
 interface PokemonService {
 
     @GET("pokemon")
-    suspend fun getSomePokemon(): Response<InitialPokemonResponse>
+    suspend fun getSomePokemon(): Response<InitialPokemonDTO>
 
     @GET("pokemon/{nameOrId}")
-    suspend fun getPokemonByNameOrId(@Path("nameOrId") nameOrId: String): Response<Pokemon>
+    suspend fun getPokemonByNameOrId(@Path("nameOrId") nameOrId: String): Response<PokemonDTO>
 
     @GET("pokemon-species/{name}")
-    suspend fun getPokemonSpecieByName(@Path("name") name: String): Response<SpecieDetails>
+    suspend fun getPokemonSpecieByName(@Path("name") name: String): Response<SpecieDetailsDTO>
 
     @GET("pokemon")
     suspend fun getNext20Pokemon(
         @Query("offset") offset: Int,
         @Query("limit") limit: Int
-    ): Response<InitialPokemonResponse>
+    ): Response<InitialPokemonDTO>
 }

@@ -40,8 +40,8 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil.compose.AsyncImage
 import com.example.who_is_that_pokemon.R
-import com.example.who_is_that_pokemon.data.entity.Stats
-import com.example.who_is_that_pokemon.data.entity.TypeSlot
+import com.example.who_is_that_pokemon.data.dto.StatsDTO
+import com.example.who_is_that_pokemon.data.dto.TypeSlotDTO
 import com.example.who_is_that_pokemon.dsm.animation.LoadingAnimation
 import kotlin.text.replaceFirstChar
 
@@ -249,18 +249,18 @@ fun MainView(viewModel: PokemonDetailsViewModel) {
 }
 
 @Composable
-fun TypeComponent(item: TypeSlot, viewModel: PokemonDetailsViewModel) {
+fun TypeComponent(item: TypeSlotDTO, viewModel: PokemonDetailsViewModel) {
     Column(
         modifier = Modifier
             .widthIn(min = 50.dp)
-            .background(viewModel.getTypeColor(item.type.name), RoundedCornerShape(24.dp))
+            .background(viewModel.getTypeColor(item.typeDTO.name), RoundedCornerShape(24.dp))
             .padding(4.dp, 1.dp, 4.dp, 1.dp),
         horizontalAlignment = Alignment.CenterHorizontally
     )
     {
         Text(
             modifier = Modifier.fillMaxWidth(),
-            text = item.type.name,
+            text = item.typeDTO.name,
             textAlign = TextAlign.Center,
             style = MaterialTheme.typography.titleMedium,
             color = colorResource(R.color.pokemon_white),
@@ -272,7 +272,7 @@ fun TypeComponent(item: TypeSlot, viewModel: PokemonDetailsViewModel) {
 }
 
 @Composable
-fun StatusComponent(item: Stats, viewModel: PokemonDetailsViewModel) {
+fun StatusComponent(item: StatsDTO, viewModel: PokemonDetailsViewModel) {
 
     Spacer(Modifier.height(8.dp))
 

@@ -1,15 +1,15 @@
-package com.example.who_is_that_pokemon.data.entity
+package com.example.who_is_that_pokemon.data.dto
 
 import com.google.gson.annotations.SerializedName
 
-data class Stats(
+data class StatsDTO(
     @SerializedName("base_stat")
     var value: Float,
     @SerializedName("stat")
-    var stat: Stat
+    var stat: StatDTO
 )
 
-data class Stat(
+data class StatDTO(
     @SerializedName("name")
     val statName: String,
 )

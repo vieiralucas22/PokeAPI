@@ -4,8 +4,8 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
 import com.example.who_is_that_pokemon.constants.RetrofitConstants
-import com.example.who_is_that_pokemon.data.entity.Pokemon
-import com.example.who_is_that_pokemon.data.entity.Sprites
+import com.example.who_is_that_pokemon.data.dto.PokemonDTO
+import com.example.who_is_that_pokemon.data.dto.SpritesDTO
 import com.example.who_is_that_pokemon.domain.repository.IPokemonRepository
 import com.example.who_is_that_pokemon.screens.common.BaseViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -17,12 +17,12 @@ class HomeViewModel @Inject constructor(
     private val _pokemonRepository: IPokemonRepository
 ) : BaseViewModel() {
 
-    private val _displayedPokemon = MutableLiveData(emptyList<Pokemon>())
-    val displayedPokemon: LiveData<List<Pokemon>> = _displayedPokemon
+    private val _displayedPokemonDTO = MutableLiveData(emptyList<PokemonDTO>())
+    val displayedPokemonDTO: LiveData<List<PokemonDTO>> = _displayedPokemonDTO
 
     private var nextPokemon: String = ""
 
-    private var pokemonInScreen: MutableList<Pokemon> = mutableListOf()
+    private var pokemonDTOInScreen: MutableList<PokemonDTO> = mutableListOf()
 
     init {
         loadPokemon()
@@ -40,8 +40,8 @@ class HomeViewModel @Inject constructor(
                 if (response.isSuccessful && response.body() != null) {
                     val body = response.body()
 
-                    if (body != null && body.pokemons.isNotEmpty()) {
-                        fillAllPokemonInfo(body.pokemons)
+                    if (body != null && body.pokemonDTOS.isNotEmpty()) {
+                        fillAllPokemonInfo(body.pokemonDTOS)
                         nextPokemon = body.next20Pokemons
                     }
                 }
@@ -68,8 +68,8 @@ class HomeViewModel @Inject constructor(
                 if (response.isSuccessful && response.body() != null) {
                     val body = response.body()
 
-                    if (body != null && body.pokemons != null && body.pokemons.isNotEmpty()) {
-                        fillAllPokemonInfo(body.pokemons)
+                    if (body != null && body.pokemonDTOS != null && body.pokemonDTOS.isNotEmpty()) {
+                        fillAllPokemonInfo(body.pokemonDTOS)
                         nextPokemon = body.next20Pokemons
                     }
                 }
@@ -81,9 +81,9 @@ class HomeViewModel @Inject constructor(
         }
     }
 
-    fun fillAllPokemonInfo(allPokemon: List<Pokemon>) {
+    fun fillAllPokemonInfo(allPokemonDTO: List<PokemonDTO>) {
         viewModelScope.launch {
-            for (pokemon in allPokemon) {
+            for (pokemon in allPokemonDTO) {
                 val response = _pokemonRepository.getPokemonByNameOrId(pokemon.name)
 
                 if (response.isSuccessful && response.body() != null) {
@@ -93,36 +93,36 @@ class HomeViewModel @Inject constructor(
                 }
             }
 
-            updatePokemonDisplayed(allPokemon)
+            updatePokemonDisplayed(allPokemonDTO)
         }
     }
 
-    suspend fun fillPokemonInfo(newPokemon: Pokemon, body: Pokemon?) {
-        newPokemon.weight = body?.weight!!
-        newPokemon.height = body.height
-        newPokemon.id = body.id
-        fillAllPokemonStats(newPokemon, body)
-        fillPokemonSprites(newPokemon, body)
-        fillPokemonTypes(newPokemon, body)
-        fillPokemonColor(newPokemon)
+    suspend fun fillPokemonInfo(newPokemonDTO: PokemonDTO, body: PokemonDTO?) {
+        newPokemonDTO.weight = body?.weight!!
+        newPokemonDTO.height = body.height
+        newPokemonDTO.id = body.id
+        fillAllPokemonStats(newPokemonDTO, body)
+        fillPokemonSprites(newPokemonDTO, body)
+        fillPokemonTypes(newPokemonDTO, body)
+        fillPokemonColor(newPokemonDTO)
     }
 
-    fun fillAllPokemonStats(newPokemon: Pokemon, body: Pokemon?) {
+    fun fillAllPokemonStats(newPokemonDTO: PokemonDTO, body: PokemonDTO?) {
         if (body != null && body.stats.isNotEmpty())
-            newPokemon.stats = body.stats
+            newPokemonDTO.stats = body.stats
     }
 
-    fun fillPokemonSprites(newPokemon: Pokemon, body: Pokemon?) {
+    fun fillPokemonSprites(newPokemonDTO: PokemonDTO, body: PokemonDTO?) {
         if (body != null) {
-            newPokemon.sprites = Sprites()
-            newPokemon.sprites.default = body.sprites.default
-            newPokemon.sprites.shiny = body.sprites.shiny
+            newPokemonDTO.spritesDTO = SpritesDTO()
+            newPokemonDTO.spritesDTO.default = body.spritesDTO.default
+            newPokemonDTO.spritesDTO.shiny = body.spritesDTO.shiny
         }
     }
 
-    fun fillPokemonTypes(newPokemon: Pokemon, body: Pokemon?) {
+    fun fillPokemonTypes(newPokemonDTO: PokemonDTO, body: PokemonDTO?) {
         if (body != null && body.types.isNotEmpty())
-            newPokemon.types = body.types
+            newPokemonDTO.types = body.types
     }
 
     fun getNext20PokemonInfo(): Pair<Int, Int> {
@@ -141,12 +141,12 @@ class HomeViewModel @Inject constructor(
         return offset to limit
     }
 
-    fun updatePokemonDisplayed(newPokemons: List<Pokemon>) {
-        for (pokemon in newPokemons) {
-            pokemonInScreen.add(pokemon)
+    fun updatePokemonDisplayed(newPokemonDTOS: List<PokemonDTO>) {
+        for (pokemon in newPokemonDTOS) {
+            pokemonDTOInScreen.add(pokemon)
         }
 
-        _displayedPokemon.value = pokemonInScreen.toList()
+        _displayedPokemonDTO.value = pokemonDTOInScreen.toList()
     }
 
 }
