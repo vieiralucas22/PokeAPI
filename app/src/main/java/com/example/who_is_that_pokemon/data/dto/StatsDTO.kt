@@ -4,9 +4,9 @@ import com.google.gson.annotations.SerializedName
 
 data class StatsDTO(
     @SerializedName("base_stat")
-    var value: Float,
+    val value: Float,
     @SerializedName("stat")
-    var stat: StatDTO
+    val stat: StatDTO
 )
 
 data class StatDTO(

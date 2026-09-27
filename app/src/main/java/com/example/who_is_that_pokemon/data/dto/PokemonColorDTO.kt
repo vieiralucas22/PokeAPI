@@ -2,7 +2,7 @@ package com.example.who_is_that_pokemon.data.dto
 
 import com.google.gson.annotations.SerializedName
 
-data class PokemonDescriptionDTO(
-    @SerializedName("flavor_text")
-    val text: String
+data class PokemonColorDTO(
+    @SerializedName("name")
+    val colorName : String,
 )

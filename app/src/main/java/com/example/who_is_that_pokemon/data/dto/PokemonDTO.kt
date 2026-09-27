@@ -5,18 +5,18 @@ import com.google.gson.annotations.SerializedName
 
 data class PokemonDTO(
     @SerializedName("id")
-    var id: Int,
+    val id: Int,
     @SerializedName("name")
     val name: String,
     @SerializedName("height")
-    var height: Double,
+    val height: Double,
     @SerializedName("weight")
-    var weight: Double,
+    val weight: Double,
     @SerializedName("types")
-    var types: List<TypeSlotDTO>,
+    val types: List<TypeSlotDTO>,
     @SerializedName("sprites")
-    var spritesDTO: SpritesDTO,
+    val spritesDTO: SpritesDTO,
     @SerializedName("stats")
-    var stats: List<StatsDTO>,
-    var color: Color
+    val stats: List<StatsDTO>,
+    val color: Color
 )

@@ -112,7 +112,7 @@ fun Content(
 
     LaunchedEffect(shouldLoadMore) {
         if (shouldLoadMore) {
-            viewModel.loadNext20Pokemon()
+//            viewModel.loadNext20Pokemon()
         }
     }
 

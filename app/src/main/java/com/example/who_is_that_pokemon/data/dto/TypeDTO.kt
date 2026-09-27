@@ -4,5 +4,5 @@ import com.google.gson.annotations.SerializedName
 
 data class TypeDTO(
     @SerializedName("name")
-    var name: String,
+    val name: String,
 )
