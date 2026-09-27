@@ -1,6 +1,5 @@
 package com.example.who_is_that_pokemon.screens.home
 
-import android.annotation.SuppressLint
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -43,15 +42,14 @@ import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.example.who_is_that_pokemon.R
 import com.example.who_is_that_pokemon.screens.common.model.InitialPokemonState
-import com.example.who_is_that_pokemon.data.dto.PokemonDTO
-import com.example.who_is_that_pokemon.data.dto.SpecieDetailsDTO
-import com.example.who_is_that_pokemon.domain.repository.PokemonRepository
-import com.example.who_is_that_pokemon.domain.usecase.LoadPokemonUseCase
+import com.example.who_is_that_pokemon.screens.common.model.PokemonColorState
+import com.example.who_is_that_pokemon.screens.common.model.PokemonState
+import com.example.who_is_that_pokemon.screens.common.model.SpecieDetailsState
+import com.example.who_is_that_pokemon.screens.common.model.SpritesState
 import com.example.who_is_that_pokemon.dsm.animation.LoadingAnimation
 import com.example.who_is_that_pokemon.dsm.composable.ErrorComponent
 import com.example.who_is_that_pokemon.screens.home.composable.PokemonItem
 import com.example.who_is_that_pokemon.screens.home.model.HomeUIState
-import retrofit2.Response
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -62,6 +60,16 @@ fun HomeScreen(
 ) {
     val uiState = viewModel.uiState.collectAsStateWithLifecycle().value
 
+    HomeScaffold(uiState, onPokemonClick = onPokemonClick, onSearch = onSearch)
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+private fun HomeScaffold(
+    uiState: HomeUIState,
+    onPokemonClick: (String) -> Unit,
+    onSearch: (String) -> Unit
+) {
     Scaffold(
         containerColor = colorResource(R.color.white),
         topBar = {
@@ -184,22 +192,41 @@ fun PokemonGrid(state: InitialPokemonState, onPokemonClick: (String) -> Unit) {
     }
 }
 
-@SuppressLint("ViewModelConstructorInComposable")
 @Preview(name = "LoadingState")
 @Composable
 private fun HomeLoadingStatePreview() {
-    val mockViewModel = HomeViewModel(object : LoadPokemonUseCase {
-        override suspend fun invoke(
-            offset: Int,
-            limit: Int
-        ): InitialPokemonState? {
-            TODO()
-        }
-    })
-    HomeScreen(mockViewModel, onPokemonClick = {}, onSearch = {})
+    HomeScaffold(HomeUIState.Loading, onPokemonClick = {}, onSearch = {})
 }
 
+@Preview(name = "SuccessState")
+@Composable
+private fun HomeSuccessStatePreview() {
+    val mockPokemon = PokemonState(
+        id = 25,
+        name = "pikachu",
+        height = 0.4,
+        weight = 6.0,
+        types = emptyList(),
+        sprites = SpritesState(
+            default = "",
+            shiny = ""
+        ),
+        stats = emptyList(),
+        specieDetails = SpecieDetailsState(
+            pokemonColor = PokemonColorState("yellow"),
+            descriptions = emptyList()
+        )
+    )
+    val mockState = InitialPokemonState(
+        total = 1,
+        allPokemon = listOf(mockPokemon),
+        next20Pokemon = null
+    )
+    HomeScaffold(HomeUIState.Success(mockState), onPokemonClick = {}, onSearch = {})
+}
 
-
-
-
+@Preview(name = "ErrorState")
+@Composable
+private fun HomeErrorStatePreview() {
+    HomeScaffold(HomeUIState.Error("Pokemon not found!"), onPokemonClick = {}, onSearch = {})
+}
