@@ -2,10 +2,14 @@ package com.example.who_is_that_pokemon.screens.home.converter
 
 import com.example.who_is_that_pokemon.data.dto.InitialPokemonDTO
 import com.example.who_is_that_pokemon.data.dto.PokemonDTO
+import com.example.who_is_that_pokemon.data.dto.PokemonDescriptionDTO
 import com.example.who_is_that_pokemon.data.dto.StatsDTO
 import com.example.who_is_that_pokemon.data.dto.TypeSlotDTO
 import com.example.who_is_that_pokemon.screens.common.model.InitialPokemonState
+import com.example.who_is_that_pokemon.screens.common.model.PokemonColorState
+import com.example.who_is_that_pokemon.screens.common.model.PokemonDescriptionState
 import com.example.who_is_that_pokemon.screens.common.model.PokemonState
+import com.example.who_is_that_pokemon.screens.common.model.SpecieDetailsState
 import com.example.who_is_that_pokemon.screens.common.model.SpritesState
 import com.example.who_is_that_pokemon.screens.common.model.StatState
 import com.example.who_is_that_pokemon.screens.common.model.StatsState
@@ -33,7 +37,13 @@ class NextPokemonConverter @Inject constructor() {
                     default = pokemonDTO.sprite?.default ?: "",
                     shiny = pokemonDTO.sprite?.shiny ?: ""
                 ),
-                stats = buildPokemonStats(pokemonDTO.stats)
+                stats = buildPokemonStats(pokemonDTO.stats),
+                specieDetails = SpecieDetailsState(
+                    pokemonColor = PokemonColorState(
+                        pokemonDTO.specieDetails?.pokemonColor?.colorName ?: ""
+                    ),
+                    descriptions = buildPokemonDescription(pokemonDTO.specieDetails?.descriptions)
+                )
             )
         }
 
@@ -63,4 +73,16 @@ class NextPokemonConverter @Inject constructor() {
 
         return emptyList()
     }
+
+    private fun buildPokemonDescription(descriptions: List<PokemonDescriptionDTO>?): List<PokemonDescriptionState> {
+        descriptions?.let {
+            return descriptions.map { description ->
+                PokemonDescriptionState(
+                    description.text
+                )
+            }
+        }
+        return emptyList()
+    }
+
 }

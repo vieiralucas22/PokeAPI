@@ -6,5 +6,5 @@ data class SpecieDetailsDTO(
     @SerializedName("color")
     val pokemonColor: PokemonColorDTO,
     @SerializedName("flavor_text_entries")
-    val descriptions: List<PokemonDescriptionDTO>
+    val descriptions: List<PokemonDescriptionDTO>?
 )

@@ -1,11 +1,9 @@
 package com.example.who_is_that_pokemon.domain.usecase
 
 import com.example.who_is_that_pokemon.data.dto.PokemonDTO
-import com.example.who_is_that_pokemon.data.dto.SpritesDTO
 import com.example.who_is_that_pokemon.domain.repository.PokemonRepository
 import com.example.who_is_that_pokemon.screens.common.model.InitialPokemonState
 import com.example.who_is_that_pokemon.screens.home.converter.NextPokemonConverter
-import kotlinx.coroutines.flow.Flow
 import javax.inject.Inject
 
 class LoadPokemonUseCaseImpl @Inject constructor(
@@ -35,7 +33,20 @@ class LoadPokemonUseCaseImpl @Inject constructor(
             val body = response.body()
 
             body?.let {
-                return it
+                return getPokemonUpdatedWithSpecieDetails(it)
+            }
+        }
+        return pokemon
+    }
+
+    private suspend fun getPokemonUpdatedWithSpecieDetails(pokemon: PokemonDTO): PokemonDTO {
+        val response = _pokemonRepository.getPokemonSpecieByName(pokemon.name)
+
+        if (response.isSuccessful && response.body() != null) {
+            val body = response.body()
+
+            body?.let {
+                return pokemon.copy(specieDetails = it)
             }
         }
         return pokemon

@@ -17,4 +17,5 @@ data class PokemonDTO(
     val sprite: SpritesDTO?,
     @SerializedName("stats")
     val stats: List<StatsDTO>?,
+    val specieDetails: SpecieDetailsDTO?
 )

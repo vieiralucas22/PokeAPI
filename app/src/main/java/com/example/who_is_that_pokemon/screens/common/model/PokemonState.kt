@@ -7,5 +7,6 @@ data class PokemonState(
     val weight: Double,
     val types: List<TypeSlotState>,
     val sprites: SpritesState,
-    val stats: List<StatsState>
+    val stats: List<StatsState>,
+    val specieDetails: SpecieDetailsState
 )
