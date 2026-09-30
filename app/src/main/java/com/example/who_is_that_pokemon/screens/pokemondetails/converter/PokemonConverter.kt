@@ -1,11 +1,9 @@
-package com.example.who_is_that_pokemon.screens.home.converter
+package com.example.who_is_that_pokemon.screens.pokemondetails.converter
 
-import com.example.who_is_that_pokemon.data.dto.InitialPokemonDTO
 import com.example.who_is_that_pokemon.data.dto.PokemonDTO
 import com.example.who_is_that_pokemon.data.dto.PokemonDescriptionDTO
 import com.example.who_is_that_pokemon.data.dto.StatsDTO
 import com.example.who_is_that_pokemon.data.dto.TypeSlotDTO
-import com.example.who_is_that_pokemon.screens.common.model.InitialPokemonState
 import com.example.who_is_that_pokemon.screens.common.model.PokemonColorState
 import com.example.who_is_that_pokemon.screens.common.model.PokemonDescriptionState
 import com.example.who_is_that_pokemon.screens.common.model.PokemonState
@@ -17,35 +15,26 @@ import com.example.who_is_that_pokemon.screens.common.model.TypeSlotState
 import com.example.who_is_that_pokemon.screens.common.model.TypeState
 import javax.inject.Inject
 
-class NextPokemonConverter @Inject constructor() {
-    fun convert(dto: InitialPokemonDTO): InitialPokemonState =
-        InitialPokemonState(
-            total = dto.total,
-            allPokemon = buildAllPokemon(dto.allPokemon),
-            next20Pokemon = dto.next20Pokemon
-        )
+class PokemonConverter @Inject constructor() {
 
-    private fun buildAllPokemon(nextPokemon: List<PokemonDTO>): List<PokemonState> =
-        nextPokemon.map { pokemonDTO ->
-            PokemonState(
-                id = pokemonDTO.id,
-                name = pokemonDTO.name,
-                height = pokemonDTO.height ?: 0.0,
-                weight = pokemonDTO.weight ?: 0.0,
-                types = buildPokemonTypes(pokemonDTO.types),
-                sprites = SpritesState(
-                    default = pokemonDTO.sprite?.default ?: "",
-                    shiny = pokemonDTO.sprite?.shiny ?: ""
-                ),
-                stats = buildPokemonStats(pokemonDTO.stats),
-                specieDetails = SpecieDetailsState(
-                    pokemonColor = PokemonColorState(
-                        pokemonDTO.specieDetails?.pokemonColor?.colorName ?: ""
-                    ),
-                    descriptions = buildPokemonDescription(pokemonDTO.specieDetails?.descriptions)
-                )
-            )
-        }
+    fun convert(pokemonDTO: PokemonDTO): PokemonState = PokemonState(
+        id = pokemonDTO.id,
+        name = pokemonDTO.name,
+        height = pokemonDTO.height ?: 0.0,
+        weight = pokemonDTO.weight ?: 0.0,
+        types = buildPokemonTypes(pokemonDTO.types),
+        sprites = SpritesState(
+            default = pokemonDTO.sprite?.default ?: "",
+            shiny = pokemonDTO.sprite?.shiny ?: ""
+        ),
+        stats = buildPokemonStats(pokemonDTO.stats),
+        specieDetails = SpecieDetailsState(
+            pokemonColor = PokemonColorState(
+                pokemonDTO.specieDetails?.pokemonColor?.colorName ?: ""
+            ),
+            descriptions = buildPokemonDescription(pokemonDTO.specieDetails?.descriptions)
+        )
+    )
 
     private fun buildPokemonTypes(typesDTO: List<TypeSlotDTO>?): List<TypeSlotState> {
 
@@ -84,5 +73,4 @@ class NextPokemonConverter @Inject constructor() {
         }
         return emptyList()
     }
-
 }

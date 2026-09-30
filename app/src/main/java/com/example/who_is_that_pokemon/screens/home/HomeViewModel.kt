@@ -1,14 +1,8 @@
 package com.example.who_is_that_pokemon.screens.home
 
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.who_is_that_pokemon.constants.RetrofitConstants
-import com.example.who_is_that_pokemon.data.dto.PokemonDTO
-import com.example.who_is_that_pokemon.data.dto.SpritesDTO
-import com.example.who_is_that_pokemon.domain.repository.PokemonRepository
 import com.example.who_is_that_pokemon.domain.usecase.LoadPokemonUseCase
-import com.example.who_is_that_pokemon.screens.common.BaseViewModel
 import com.example.who_is_that_pokemon.screens.home.model.HomeUIState
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -23,7 +17,7 @@ import javax.inject.Inject
 @HiltViewModel
 class HomeViewModel @Inject constructor(
     private val _loadPokemonUseCase: LoadPokemonUseCase
-) : BaseViewModel() {
+) : ViewModel() {
 
     private val _uiState: MutableStateFlow<HomeUIState> = MutableStateFlow(HomeUIState.Loading)
 

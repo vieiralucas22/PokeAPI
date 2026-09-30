@@ -25,90 +25,83 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.graphics.StrokeCap
+import androidx.compose.ui.platform.LocalInspectionMode
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import coil.compose.AsyncImage
 import com.example.who_is_that_pokemon.R
-import com.example.who_is_that_pokemon.data.dto.StatsDTO
-import com.example.who_is_that_pokemon.data.dto.TypeSlotDTO
 import com.example.who_is_that_pokemon.dsm.animation.LoadingAnimation
 import com.example.who_is_that_pokemon.dsm.composable.ErrorComponent
+import com.example.who_is_that_pokemon.screens.common.model.PokemonColorState
+import com.example.who_is_that_pokemon.screens.common.model.PokemonDescriptionState
+import com.example.who_is_that_pokemon.screens.common.model.PokemonState
+import com.example.who_is_that_pokemon.screens.common.model.SpecieDetailsState
+import com.example.who_is_that_pokemon.screens.common.model.SpritesState
+import com.example.who_is_that_pokemon.screens.common.model.StatState
+import com.example.who_is_that_pokemon.screens.common.model.StatsState
+import com.example.who_is_that_pokemon.screens.common.model.TypeSlotState
+import com.example.who_is_that_pokemon.screens.common.model.TypeState
+import com.example.who_is_that_pokemon.screens.pokemondetails.composable.StatsComponent
+import com.example.who_is_that_pokemon.screens.pokemondetails.composable.TypeComponent
+import com.example.who_is_that_pokemon.screens.pokemondetails.model.PokemonDetailsUIState
 import kotlin.text.replaceFirstChar
 
 @Composable
 fun PokemonDetailsScreen(viewModel: PokemonDetailsViewModel) {
 
-    LaunchedEffect(Unit) {
-        viewModel.loadPokemonInformation()
-    }
+    val uiState = viewModel.uiState.collectAsStateWithLifecycle().value
 
-    DisposableEffect(Unit) {
-        onDispose {
-            viewModel.clearPokemonInfo()
-        }
-    }
+    Content(uiState)
+}
 
-
+@Composable
+fun Content(uiState: PokemonDetailsUIState) {
     Scaffold(
-        content = { padding ->
-            Column(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .padding(padding)
-                    .background(color = viewModel.color),
-                horizontalAlignment = Alignment.CenterHorizontally,
-                verticalArrangement = Arrangement.Center
-            ) {
-
-                if (viewModel.isLoading) {
-                    LoadingAnimation(
-                        circleSize = 50.dp,
-                        travelDistance = 40.dp,
-                        spaceBetween = 12.dp
-                    )
-                } else {
-                    if (viewModel.shouldShowNotFoundComponent) {
-                        ErrorComponent("Pokemon not found!")
-                    } else {
-                        HeaderView(viewModel)
-
-                        Box(
-                            modifier = Modifier.fillMaxWidth()
-                        ) {
-                            Image(
-                                painter = painterResource(R.drawable.pokeball_icon),
-                                contentDescription = null,
-                                modifier = Modifier
-                                    .align(Alignment.CenterEnd)
-                                    .size(250.dp)
-                                    .alpha(0.15f)
-                                    .rotate(315f)
-                            )
-
-                            AsyncImage(
-                                model = viewModel.sprite,
-                                contentDescription = viewModel.pokemonName,
-                                modifier = Modifier
-                                    .size(200.dp)
-                                    .align(Alignment.Center)
-                            )
-
+        //topBar = { HeaderView() },
+        content = { paddingValues ->
+            Column {
+                when (uiState) {
+                    is PokemonDetailsUIState.Success -> {
+                        Column(
+                            modifier = Modifier
+                                .fillMaxSize()
+                                .background(
+                                colorResource(uiState.data.getPokemonColorId())
+                            ).padding(paddingValues)
+                        )
+                        {
+                            SuccessContent(uiState.data)
                         }
-                        MainView(viewModel)
-
                     }
+
+                    is PokemonDetailsUIState.Loading -> Column(
+                        modifier = Modifier
+                            .fillMaxSize(),
+                        horizontalAlignment = Alignment.CenterHorizontally,
+                        verticalArrangement = Arrangement.Center
+                    ) {
+                        LoadingAnimation(
+                            circleSize = 50.dp,
+                            travelDistance = 40.dp,
+                            spaceBetween = 12.dp
+                        )
+                    }
+
+                    is PokemonDetailsUIState.Error -> ErrorComponent("Pokemon not found!")
                 }
             }
         }
@@ -116,7 +109,48 @@ fun PokemonDetailsScreen(viewModel: PokemonDetailsViewModel) {
 }
 
 @Composable
-fun HeaderView(viewModel: PokemonDetailsViewModel) {
+fun SuccessContent(pokemonState: PokemonState) {
+    val isPreview = LocalInspectionMode.current
+
+    Box(
+        modifier = Modifier
+            .fillMaxWidth()
+    ) {
+        Image(
+            painter = painterResource(R.drawable.pokeball_icon),
+            contentDescription = null,
+            modifier = Modifier
+                .align(Alignment.CenterEnd)
+                .size(250.dp)
+                .alpha(0.15f)
+                .rotate(315f)
+        )
+
+        if (isPreview) {
+            Image(
+                painter = painterResource(R.drawable.pikachu_preview),
+                contentDescription = null,
+                modifier = Modifier
+                    .size(150.dp)
+                    .align(Alignment.Center)
+            )
+        } else {
+            AsyncImage(
+                model = pokemonState.sprites.default,
+                contentDescription = pokemonState.name,
+                modifier = Modifier
+                    .size(200.dp)
+                    .align(Alignment.Center)
+            )
+        }
+
+    }
+    MainView(pokemonState)
+}
+
+
+@Composable
+fun HeaderView() {
     Row(
         modifier = Modifier
             .fillMaxWidth()
@@ -126,43 +160,42 @@ fun HeaderView(viewModel: PokemonDetailsViewModel) {
     ) {
 
         Text(
-            text = viewModel.pokemonName.replaceFirstChar { it.uppercase() },
+            text = "Pokemon name".replaceFirstChar { it.uppercase() },
             style = MaterialTheme.typography.titleMedium,
             fontSize = 32.sp,
-            color = colorResource(R.color.pokemon_white)
+            color = colorResource(R.color.white)
         )
 
         Text(
-            text = "# " + viewModel.id,
+            text = "National index",
             style = MaterialTheme.typography.titleMedium,
-            color = colorResource(R.color.pokemon_white),
+            color = colorResource(R.color.white),
             fontSize = 24.sp,
         )
     }
 }
 
 @Composable
-fun MainView(viewModel: PokemonDetailsViewModel) {
+fun MainView(pokemonState: PokemonState) {
 
-    val allPokemonStats by viewModel.pokemonStats.observeAsState(emptyList())
-    val allPokemonTypes by viewModel.pokemonTypes.observeAsState(emptyList())
+    val types = pokemonState.types
+    val stats = pokemonState.stats
+    val description = pokemonState.specieDetails.descriptions[0].text
+    val colorId = pokemonState.getPokemonColorId()
 
     Column(
         modifier = Modifier
-            .fillMaxSize()
             .padding(8.dp)
-            .background(colorResource(R.color.pokemon_white), RoundedCornerShape(16.dp))
+            .background(colorResource(R.color.white), RoundedCornerShape(16.dp))
             .padding(16.dp),
 
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-
-        allPokemonTypes.let { stat ->
-
-            if (allPokemonTypes.isNotEmpty())
+        types.let { type -> // Todo: Consertar o let depois não é necessario
+            if (types.isNotEmpty())
                 LazyRow(content = {
-                    itemsIndexed(stat) { index, item ->
-                        TypeComponent(item, viewModel)
+                    itemsIndexed(type) { _, item ->
+                        TypeComponent(item.typeState)
                     }
                 })
         }
@@ -175,14 +208,14 @@ fun MainView(viewModel: PokemonDetailsViewModel) {
             textAlign = TextAlign.Center,
             style = MaterialTheme.typography.titleMedium,
             fontSize = 24.sp,
-            color = viewModel.color
+            color = colorResource(colorId)
         )
 
         Spacer(Modifier.height(16.dp))
 
         Text(
             modifier = Modifier.fillMaxWidth(),
-            text = viewModel.description.replace("\n", " ")
+            text = description.replace("\n", " ")
                 .replace("\u000c", " "),
             textAlign = TextAlign.Center,
             style = MaterialTheme.typography.titleMedium,
@@ -191,23 +224,23 @@ fun MainView(viewModel: PokemonDetailsViewModel) {
 
         Spacer(Modifier.height(16.dp))
 
-        allPokemonStats.let { stat ->
+        stats.let { stat ->
 
-            if (allPokemonStats.isNotEmpty()) {
+            if (stat.isNotEmpty()) {
                 Text(
                     modifier = Modifier.fillMaxWidth(),
                     text = "Base Stats",
                     textAlign = TextAlign.Center,
                     style = MaterialTheme.typography.titleMedium,
                     fontSize = 24.sp,
-                    color = viewModel.color
+                    color = colorResource(colorId)
                 )
 
                 Spacer(Modifier.height(16.dp))
 
                 LazyColumn(content = {
-                    itemsIndexed(stat) { index, item ->
-                        StatusComponent(item, viewModel)
+                    itemsIndexed(stat) { _, item ->
+                        StatsComponent(item, colorId)
                     }
                 })
             }
@@ -215,75 +248,45 @@ fun MainView(viewModel: PokemonDetailsViewModel) {
     }
 }
 
+@Preview
 @Composable
-fun TypeComponent(item: TypeSlotDTO, viewModel: PokemonDetailsViewModel) {
-//    Column(
-//        modifier = Modifier
-//            .widthIn(min = 50.dp)
-//            .background(viewModel.getTypeColor(item.typeDTO.name), RoundedCornerShape(24.dp))
-//            .padding(4.dp, 1.dp, 4.dp, 1.dp),
-//        horizontalAlignment = Alignment.CenterHorizontally
-//    )
-//    {
-//        Text(
-//            modifier = Modifier.fillMaxWidth(),
-//            text = item.typeDTO.name,
-//            textAlign = TextAlign.Center,
-//            style = MaterialTheme.typography.titleMedium,
-//            color = colorResource(R.color.pokemon_white),
-//            fontSize = 12.sp
-//        )
-//    }
-//
-//    Spacer(Modifier.width(4.dp))
-}
-
-@Composable
-fun StatusComponent(item: StatsDTO, viewModel: PokemonDetailsViewModel) {
-
-    Spacer(Modifier.height(8.dp))
-
-    Row(
-        horizontalArrangement = Arrangement.SpaceBetween,
-        verticalAlignment = Alignment.CenterVertically
-    ) {
-        Text(
-            text = item.stat.statName.replaceFirstChar { it.uppercase() }.replace("Special-", "Sp.")
-                .replace("attack", "atk").replace("defense", "def"),
-            style = MaterialTheme.typography.titleMedium,
-            modifier = Modifier.weight(0.24f),
-            color = viewModel.color
-        )
-
-        Spacer(
-            modifier = Modifier
-                .fillMaxHeight()
-                .width(1.dp)
-                .background(colorResource(R.color.search_background))
-                .weight(0.02f)
-        )
-
-        Text(
-            text = item.value.toString(),
-            style = MaterialTheme.typography.titleMedium,
-            modifier = Modifier.weight(0.14f)
-        )
-
-        LinearProgressIndicator(
-            progress = { item.value / 255f },
-            modifier = Modifier
-                .weight(0.60f)
-                .height(8.dp),
-            color = viewModel.color,
-            trackColor = viewModel.color.copy(alpha = 0.25f),
-            gapSize = 0.dp,
-            strokeCap = StrokeCap.Round
-        )
-    }
+private fun LoadingPreview() {
+    Content(PokemonDetailsUIState.Loading)
 }
 
 @Preview
 @Composable
-private fun DetailsPreview() {
+private fun SuccessStatePreview() {
+    val mockPokemon = PokemonState(
+        id = 25,
+        name = "pikachu",
+        height = 0.4,
+        weight = 6.0,
+        types = listOf(
+            TypeSlotState(slot = 1, typeState = TypeState(name = "Electric"))
+        ),
+        sprites = SpritesState(
+            default = "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/25.png",
+            shiny = ""
+        ),
+        stats = listOf(
+            StatsState(value = 35f, stat = StatState(statName = "hp")),
+            StatsState(value = 55f, stat = StatState(statName = "attack")),
+            StatsState(value = 40f, stat = StatState(statName = "defense")),
+            StatsState(value = 50f, stat = StatState(statName = "special-attack")),
+            StatsState(value = 50f, stat = StatState(statName = "special-defense")),
+            StatsState(value = 90f, stat = StatState(statName = "speed"))
+        ),
+        specieDetails = SpecieDetailsState(
+            pokemonColor = PokemonColorState("yellow"),
+            descriptions = listOf(
+                PokemonDescriptionState(
+                    text = "When several of these Pokémon gather, their electricity could build " +
+                            "and cause lightning storms."
+                )
+            )
+        )
+    )
 
+    Content(PokemonDetailsUIState.Success(mockPokemon))
 }

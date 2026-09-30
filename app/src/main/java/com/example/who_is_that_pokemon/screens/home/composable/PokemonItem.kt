@@ -37,7 +37,7 @@ fun PokemonItem(state: PokemonState, onClick: (String) -> Unit) {
             .heightIn(min = 200.dp)
             .padding(4.dp)
             .background(
-                colorResource(getPokemonColorId(state.specieDetails.pokemonColor.colorName)),
+                colorResource(state.getPokemonColorId()),
                 RoundedCornerShape(20.dp)
             )
             .padding(12.dp)
@@ -72,22 +72,6 @@ fun PokemonItem(state: PokemonState, onClick: (String) -> Unit) {
             style = MaterialTheme.typography.bodyMedium,
             color = Color.Gray
         )
-    }
-}
-
-fun getPokemonColorId(color: String): Int {
-    return when (color.lowercase()) {
-        "red" -> R.color.pokemon_red
-        "blue" -> R.color.pokemon_blue
-        "yellow" -> R.color.pokemon_yellow
-        "green" -> R.color.pokemon_green
-        "black" -> R.color.pokemon_black
-        "white" -> R.color.pokemon_white
-        "gray" -> R.color.pokemon_gray
-        "pink" -> R.color.pokemon_pink
-        "purple" -> R.color.pokemon_purple
-        "brown" -> R.color.pokemon_brown
-        else -> R.color.pokemon_default
     }
 }
 

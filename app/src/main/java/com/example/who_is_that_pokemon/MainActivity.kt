@@ -47,8 +47,8 @@ class MainActivity : ComponentActivity() {
                     val name = it.arguments?.getString("name")
 
                     if (name != null) {
-                        pokemonDetailsViewModel.setCurrentPokemonName(name)
-                        //PokemonDetailsScreen(pokemonDetailsViewModel)
+                        pokemonDetailsViewModel.setCurrentPokemonKey(name)
+                        PokemonDetailsScreen(pokemonDetailsViewModel)
                     }
                 }
             })

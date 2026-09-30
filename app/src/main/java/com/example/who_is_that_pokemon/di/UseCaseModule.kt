@@ -1,5 +1,7 @@
 package com.example.who_is_that_pokemon.di
 
+import com.example.who_is_that_pokemon.domain.usecase.FindPokemonUseCase
+import com.example.who_is_that_pokemon.domain.usecase.FindPokemonUseCaseImpl
 import com.example.who_is_that_pokemon.domain.usecase.LoadPokemonUseCase
 import com.example.who_is_that_pokemon.domain.usecase.LoadPokemonUseCaseImpl
 import dagger.Binds
@@ -13,4 +15,7 @@ interface UseCaseModule {
 
     @Binds
     fun bindsLoadAllPokemonUseCase(impl: LoadPokemonUseCaseImpl) : LoadPokemonUseCase
+
+    @Binds
+    fun bindsFindPokemon(impl: FindPokemonUseCaseImpl) : FindPokemonUseCase
 }

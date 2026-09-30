@@ -1,96 +1,56 @@
 package com.example.who_is_that_pokemon.screens.pokemondetails
 
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableIntStateOf
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.setValue
-import androidx.compose.ui.graphics.Color
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.who_is_that_pokemon.data.dto.StatsDTO
-import com.example.who_is_that_pokemon.data.dto.TypeSlotDTO
-import com.example.who_is_that_pokemon.domain.repository.PokemonRepository
-import com.example.who_is_that_pokemon.screens.common.BaseViewModel
+import com.example.who_is_that_pokemon.domain.usecase.FindPokemonUseCase
+import com.example.who_is_that_pokemon.screens.pokemondetails.model.PokemonDetailsUIState
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.onStart
+import kotlinx.coroutines.flow.stateIn
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
 class PokemonDetailsViewModel @Inject constructor(
-    private val _pokemonRepository: PokemonRepository
-) : BaseViewModel() {
+    private val _findPokemonUseCase: FindPokemonUseCase
+) : ViewModel() {
 
-    var id by mutableIntStateOf(0)
-    var pokemonName by mutableStateOf("")
-    var description by mutableStateOf("")
-    var sprite by mutableStateOf("")
-    var color by mutableStateOf(Color(0xFFFFFFFF))
-    var shouldShowNotFoundComponent by mutableStateOf(false)
-    private val _pokemonStats = MutableLiveData(emptyList<StatsDTO>())
-    val pokemonStats: LiveData<List<StatsDTO>> = _pokemonStats
+    private val _uiState: MutableStateFlow<PokemonDetailsUIState> = MutableStateFlow(PokemonDetailsUIState.Loading)
+    val uiState: StateFlow<PokemonDetailsUIState> = _uiState.onStart {
+        loadPokemonInformation()
+    }.stateIn(
+        scope = viewModelScope,
+        started = SharingStarted.WhileSubscribed(5_000),
+        initialValue = _uiState.value
+    )
 
-    private val _pokemonTypes = MutableLiveData(emptyList<TypeSlotDTO>())
-
-    val pokemonTypes: LiveData<List<TypeSlotDTO>> = _pokemonTypes
-
-    private var currentPokemonName = ""
+    private var currentPokemonKey = ""
 
     fun loadPokemonInformation() {
-        if (currentPokemonName.isEmpty()) {
-            shouldShowNotFoundComponent = true
-            return
-        }
-
-        if (isLoading) return
-
-        isLoading = true
 
         viewModelScope.launch {
 
-//            try {
-//                val response = _pokemonRepository.getPokemonByNameOrId(currentPokemonName)
-//
-//                if (response.isSuccessful && response.body() != null) {
-//                    val specie = _pokemonRepository.getPokemonSpecieByName(currentPokemonName)
-//                    val pokemon = response.body()
-//                    if (specie != null && pokemon != null) {
-//                        fillPokemonColor(pokemon)
-//
-//                        id = pokemon.id
-//                        pokemonName = pokemon.name
-//                       // description = specie.descriptions[0].text
-//                        sprite = pokemon.sprite?.default
-//                        _pokemonStats.value = pokemon.stats
-//                        _pokemonTypes.value = pokemon.types
-//                        shouldShowNotFoundComponent = false
-//                    }
-//                } else {
-//                    shouldShowNotFoundComponent = true
-//                }
-//            } catch (e: Exception) {
-//                shouldShowNotFoundComponent = true
-//               // Toast.makeText(application, e.message, Toast.LENGTH_LONG).show()
-//            } finally {
-//                isLoading = false
-//            }
+            try {
+                val data = _findPokemonUseCase.invoke(currentPokemonKey)
+
+                _uiState.update {
+                    if (data != null)
+                        PokemonDetailsUIState.Success(data)
+                    else
+                        PokemonDetailsUIState.Error("No pokemon")
+                }
+
+            } catch (_: Exception) {
+                PokemonDetailsUIState.Error("No pokemon error")
+            }
         }
     }
 
-    fun getTypeColor(color: String): Color = Color(0xFFFFFFFF)
-
-    fun setCurrentPokemonName(pokemonName: String) {
-        currentPokemonName = pokemonName
-    }
-
-    fun clearPokemonInfo() {
-        isLoading = false
-        pokemonName = ""
-        description = ""
-        sprite = ""
-        color = Color(0xFFFFFFFF)
-        _pokemonStats.value = emptyList()
-        _pokemonTypes.value = emptyList()
-        shouldShowNotFoundComponent = false
+    fun setCurrentPokemonKey(pokemonKey: String) {
+        currentPokemonKey = pokemonKey
     }
 }
