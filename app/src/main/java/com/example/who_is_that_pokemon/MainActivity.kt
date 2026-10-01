@@ -48,7 +48,11 @@ class MainActivity : ComponentActivity() {
 
                     if (name != null) {
                         pokemonDetailsViewModel.setCurrentPokemonKey(name)
-                        PokemonDetailsScreen(pokemonDetailsViewModel)
+                        PokemonDetailsScreen(pokemonDetailsViewModel,
+                            onBackButtonClick = {
+                                navController.popBackStack()
+                            }
+                        )
                     }
                 }
             })

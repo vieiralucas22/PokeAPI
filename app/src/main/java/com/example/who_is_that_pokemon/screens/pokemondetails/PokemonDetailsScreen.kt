@@ -7,33 +7,32 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.LinearProgressIndicator
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.livedata.observeAsState
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.rotate
-import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.platform.LocalInspectionMode
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
@@ -61,17 +60,21 @@ import com.example.who_is_that_pokemon.screens.pokemondetails.model.PokemonDetai
 import kotlin.text.replaceFirstChar
 
 @Composable
-fun PokemonDetailsScreen(viewModel: PokemonDetailsViewModel) {
+fun PokemonDetailsScreen(viewModel: PokemonDetailsViewModel, onBackButtonClick: () -> Unit) {
 
     val uiState = viewModel.uiState.collectAsStateWithLifecycle().value
 
-    Content(uiState)
+    Content(uiState) { onBackButtonClick() }
 }
 
 @Composable
-fun Content(uiState: PokemonDetailsUIState) {
+fun Content(uiState: PokemonDetailsUIState, onBackButtonClick: () -> Unit) {
     Scaffold(
-        //topBar = { HeaderView() },
+        topBar = {
+            HeaderView(uiState) {
+                onBackButtonClick()
+            }
+        },
         content = { paddingValues ->
             Column {
                 when (uiState) {
@@ -80,8 +83,9 @@ fun Content(uiState: PokemonDetailsUIState) {
                             modifier = Modifier
                                 .fillMaxSize()
                                 .background(
-                                colorResource(uiState.data.getPokemonColorId())
-                            ).padding(paddingValues)
+                                    colorResource(uiState.data.getPokemonColorId())
+                                )
+                                .padding(paddingValues)
                         )
                         {
                             SuccessContent(uiState.data)
@@ -101,7 +105,14 @@ fun Content(uiState: PokemonDetailsUIState) {
                         )
                     }
 
-                    is PokemonDetailsUIState.Error -> ErrorComponent("Pokemon not found!")
+                    is PokemonDetailsUIState.Error -> Column(
+                        modifier = Modifier
+                            .fillMaxSize(),
+                        horizontalAlignment = Alignment.CenterHorizontally,
+                        verticalArrangement = Arrangement.Center
+                    ) {
+                        ErrorComponent("Pokemon not found!")
+                    }
                 }
             }
         }
@@ -150,30 +161,56 @@ fun SuccessContent(pokemonState: PokemonState) {
 
 
 @Composable
-fun HeaderView() {
+fun HeaderView(uiState: PokemonDetailsUIState, onBackButtonClick: () -> Unit) {
+
+    var pokemonName by rememberSaveable { mutableStateOf("") }
+    var pokemonNationalIndex by rememberSaveable { mutableIntStateOf(0) }
+    var pokemonColorId by rememberSaveable { mutableIntStateOf(R.color.pokemon_black) }
+
+    if (uiState is PokemonDetailsUIState.Success) {
+        pokemonName = uiState.data.name
+        pokemonNationalIndex = uiState.data.id
+        pokemonColorId = R.color.white
+    }
+
     Row(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(24.dp),
+            .statusBarsPadding()
+            .padding(horizontal = 8.dp),
         horizontalArrangement = Arrangement.SpaceBetween,
         verticalAlignment = Alignment.CenterVertically
     ) {
 
-        Text(
-            text = "Pokemon name".replaceFirstChar { it.uppercase() },
-            style = MaterialTheme.typography.titleMedium,
-            fontSize = 32.sp,
-            color = colorResource(R.color.white)
-        )
+        Row(verticalAlignment = Alignment.CenterVertically) {
+
+            IconButton(onClick = { onBackButtonClick() }) {
+                Icon(
+                    painter = painterResource(R.drawable.icon_back),
+                    contentDescription = null,
+                    tint = colorResource(pokemonColorId)
+                )
+            }
+
+            Spacer(Modifier.width(4.dp))
+
+            Text(
+                text = pokemonName.replaceFirstChar { it.uppercase() },
+                style = MaterialTheme.typography.titleMedium,
+                fontSize = 16.sp,
+                color = colorResource(R.color.white)
+            )
+        }
 
         Text(
-            text = "National index",
+            text = "# $pokemonNationalIndex",
             style = MaterialTheme.typography.titleMedium,
             color = colorResource(R.color.white),
-            fontSize = 24.sp,
+            fontSize = 16.sp,
         )
     }
 }
+
 
 @Composable
 fun MainView(pokemonState: PokemonState) {
@@ -251,7 +288,17 @@ fun MainView(pokemonState: PokemonState) {
 @Preview
 @Composable
 private fun LoadingPreview() {
-    Content(PokemonDetailsUIState.Loading)
+    Content(PokemonDetailsUIState.Loading) {
+        // Do nothing
+    }
+}
+
+@Preview
+@Composable
+private fun ErrorPreview() {
+    Content(PokemonDetailsUIState.Error("Error state")) {
+        // Do nothing
+    }
 }
 
 @Preview
@@ -288,5 +335,7 @@ private fun SuccessStatePreview() {
         )
     )
 
-    Content(PokemonDetailsUIState.Success(mockPokemon))
+    Content(PokemonDetailsUIState.Success(mockPokemon)) {
+        // Do nothing
+    }
 }
