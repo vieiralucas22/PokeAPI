@@ -1,10 +1,13 @@
 package com.example.who_is_that_pokemon.screens.pokemondetails
 
+import android.content.Context
+import android.widget.Toast
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.who_is_that_pokemon.domain.usecase.FindPokemonUseCase
 import com.example.who_is_that_pokemon.screens.pokemondetails.model.PokemonDetailsUIState
 import dagger.hilt.android.lifecycle.HiltViewModel
+import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
@@ -16,10 +19,14 @@ import javax.inject.Inject
 
 @HiltViewModel
 class PokemonDetailsViewModel @Inject constructor(
-    private val _findPokemonUseCase: FindPokemonUseCase
+    private val _findPokemonUseCase: FindPokemonUseCase,
+    @ApplicationContext val context: Context
 ) : ViewModel() {
 
-    private val _uiState: MutableStateFlow<PokemonDetailsUIState> = MutableStateFlow(PokemonDetailsUIState.Loading)
+    /* Properties */
+
+    private val _uiState: MutableStateFlow<PokemonDetailsUIState> =
+        MutableStateFlow(PokemonDetailsUIState.Loading)
     val uiState: StateFlow<PokemonDetailsUIState> = _uiState.onStart {
         loadPokemonInformation()
     }.stateIn(
@@ -30,7 +37,21 @@ class PokemonDetailsViewModel @Inject constructor(
 
     private var currentPokemonKey = ""
 
-    fun loadPokemonInformation() {
+    /* Public method */
+
+    // TODO: Can i improve that?
+    fun setCurrentPokemonKey(pokemonKey: String) {
+        currentPokemonKey = pokemonKey
+    }
+
+    override fun onCleared() {
+        super.onCleared()
+        Toast.makeText(context, "onCleared",Toast.LENGTH_SHORT).show()
+    }
+
+    /* Private method */
+
+    private fun loadPokemonInformation() {
 
         viewModelScope.launch {
 
@@ -50,7 +71,4 @@ class PokemonDetailsViewModel @Inject constructor(
         }
     }
 
-    fun setCurrentPokemonKey(pokemonKey: String) {
-        currentPokemonKey = pokemonKey
-    }
 }

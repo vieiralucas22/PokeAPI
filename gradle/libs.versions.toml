@@ -16,6 +16,7 @@ runtimeLivedata = "1.10.2"
 foundation = "1.10.2"
 navigationCompose = "2.9.7"
 dagger-hilt = "2.57.1"
+hiltNavigationCompose = "1.2.0"
 ksp = "2.0.21-1.0.28"
 
 [libraries]
@@ -42,6 +43,7 @@ androidx-compose-foundation = { group = "androidx.compose.foundation", name = "f
 androidx-navigation-compose = { group = "androidx.navigation", name = "navigation-compose", version.ref = "navigationCompose" }
 dagger-hilt = {module = "com.google.dagger:hilt-android", version.ref ="dagger-hilt"}
 hilt-compiler = {module = "com.google.dagger:hilt-android-compiler", version.ref ="dagger-hilt"}
+androidx-hilt-navigation-compose = { group = "androidx.hilt", name = "hilt-navigation-compose", version.ref = "hiltNavigationCompose" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }

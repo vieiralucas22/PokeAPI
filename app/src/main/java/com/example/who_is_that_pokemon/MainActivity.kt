@@ -6,6 +6,7 @@ import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.activity.viewModels
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
@@ -22,9 +23,6 @@ class MainActivity : ComponentActivity() {
         installSplashScreen()
         super.onCreate(savedInstanceState)
 
-        val homeViewModel: HomeViewModel by viewModels()
-        val pokemonDetailsViewModel: PokemonDetailsViewModel by viewModels()
-
         enableEdgeToEdge()
         setContent {
             val navController = rememberNavController()
@@ -33,17 +31,19 @@ class MainActivity : ComponentActivity() {
 
                 composable(Routes.HomeView)
                 {
+                    val homeViewModel: HomeViewModel = hiltViewModel()
                     HomeScreen(
                         homeViewModel,
                         onPokemonClick = { pokemonName ->
                             navController.navigate(Routes.PokemonDetailsView + "/" + pokemonName)
-                        }, onSearch = { search ->
-                            navController.navigate(Routes.PokemonDetailsView + "/" + search)
+                        }, onSearch = { pokemonKey ->
+                            navController.navigate(Routes.PokemonDetailsView + "/" + pokemonKey)
                         })
                 }
 
                 composable(Routes.PokemonDetailsView + "/{name}")
                 {
+                    val pokemonDetailsViewModel: PokemonDetailsViewModel = hiltViewModel()
                     val name = it.arguments?.getString("name")
 
                     if (name != null) {
