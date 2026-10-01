@@ -2,6 +2,7 @@ package com.example.who_is_that_pokemon.screens.home
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.who_is_that_pokemon.constants.RetrofitConstants
 import com.example.who_is_that_pokemon.domain.usecase.LoadPokemonUseCase
 import com.example.who_is_that_pokemon.screens.home.model.HomeUIState
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -29,15 +30,20 @@ class HomeViewModel @Inject constructor(
         initialValue = _uiState.value
     )
 
-    fun loadPokemon() {
+    fun loadPokemon(nextPokemon: String? = null) {
         viewModelScope.launch {
-            val data = _loadPokemonUseCase.invoke()
+            val (offset, limit) = getNext20PokemonInfo(nextPokemon)
+
+            val data = _loadPokemonUseCase.invoke(offset, limit)
 
             try {
                 _uiState.update {
-                    if (data != null)
-                        HomeUIState.Success(data)
-                    else
+                    if (data != null) {
+                        val previousPokemon = (it as? HomeUIState.Success)?.data?.allPokemon.orEmpty()
+                        val successData = data.copy(allPokemon = previousPokemon + data.allPokemon)
+
+                        HomeUIState.Success(successData)
+                    } else
                         HomeUIState.Error("Pokemon not found!")
                 }
 
@@ -47,56 +53,23 @@ class HomeViewModel @Inject constructor(
         }
     }
 
-//    fun loadNext20Pokemon() {
-//        if (isLoading) return
-//
-//        isLoading = true
-//
-//        viewModelScope.launch {
-//            try {
-//
-//                val (offset, limit) = getNext20PokemonInfo()
-//
-//                val response = _pokemonRepository.getNext20Pokemon(offset, limit)
-//
-//                if (response.isSuccessful && response.body() != null) {
-//                    val body = response.body()
-//
-//                    if (body != null && body.pokemonDTOS != null && body.pokemonDTOS.isNotEmpty()) {
-//                        fillAllPokemonInfo(body.pokemonDTOS)
-//                        nextPokemon = body.next20Pokemons
-//                    }
-//                }
-//            } catch (e: Exception) {
-//               // Toast.makeText(application, e.message, Toast.LENGTH_LONG).show()
-//            } finally {
-//                isLoading = false
-//            }
-//        }
-//    }
+    private fun getNext20PokemonInfo(next20Pokemon: String?): Pair<Int, Int> {
 
-//    fun getNext20PokemonInfo(): Pair<Int, Int> {
-//        val query =
-//            nextPokemon.replace(RetrofitConstants.BASE_POKE_API_URL, "")
-//                .substringAfter("?", "")
-//        val params = query.split("&")
-//            .associate {
-//                val (key, value) = it.split("=")
-//                key to value
-//            }
-//
-//        val offset = params["offset"]?.toIntOrNull() ?: 0
-//        val limit = params["limit"]?.toIntOrNull() ?: 20
-//
-//        return offset to limit
-//    }
+        if (next20Pokemon.isNullOrBlank()) return 0 to 20
 
-//    fun updatePokemonDisplayed(newPokemonDTOS: List<PokemonDTO>) {
-//        for (pokemon in newPokemonDTOS) {
-//            pokemonDTOInScreen.add(pokemon)
-//        }
-//
-//        _displayedPokemonDTO.value = pokemonDTOInScreen.toList()
-//    }
+        val query =
+            next20Pokemon.replace(RetrofitConstants.BASE_POKE_API_URL, "")
+                .substringAfter("?", "")
+        val params = query.split("&")
+            .associate {
+                val (key, value) = it.split("=")
+                key to value
+            }
+
+        val offset = params["offset"]?.toIntOrNull() ?: 0
+        val limit = params["limit"]?.toIntOrNull() ?: 20
+
+        return offset to limit
+    }
 
 }

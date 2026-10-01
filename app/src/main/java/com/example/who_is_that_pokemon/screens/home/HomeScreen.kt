@@ -13,6 +13,7 @@ import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.itemsIndexed
+import androidx.compose.foundation.lazy.grid.rememberLazyGridState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Search
@@ -27,6 +28,8 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -60,7 +63,14 @@ fun HomeScreen(
 ) {
     val uiState = viewModel.uiState.collectAsStateWithLifecycle().value
 
-    HomeScaffold(uiState, onPokemonClick = onPokemonClick, onSearch = onSearch)
+    HomeScaffold(
+        uiState,
+        onPokemonClick = onPokemonClick,
+        onSearch = onSearch,
+        onUpdateList = {
+            viewModel.loadPokemon(it)
+        }
+    )
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -68,7 +78,8 @@ fun HomeScreen(
 private fun HomeScaffold(
     uiState: HomeUIState,
     onPokemonClick: (String) -> Unit,
-    onSearch: (String) -> Unit
+    onSearch: (String) -> Unit,
+    onUpdateList: (String?) -> Unit
 ) {
     Scaffold(
         containerColor = colorResource(R.color.white),
@@ -95,7 +106,11 @@ private fun HomeScaffold(
                     .padding(horizontal = 20.dp)
                     .navigationBarsPadding()
             ) {
-                Content(uiState, onPokemonClick = onPokemonClick, onSearch = onSearch)
+                Content(
+                    uiState,
+                    onPokemonClick = onPokemonClick,
+                    onSearch = onSearch,
+                    onUpdateList = { onUpdateList(it) })
             }
         }
     )
@@ -105,7 +120,8 @@ private fun HomeScaffold(
 fun Content(
     uiState: HomeUIState,
     onPokemonClick: (String) -> Unit,
-    onSearch: (String) -> Unit
+    onSearch: (String) -> Unit,
+    onUpdateList: (String?) -> Unit
 ) {
     var pokemonSearch by remember { mutableStateOf("") }
 
@@ -155,9 +171,11 @@ fun Content(
     when (uiState) {
 
         is HomeUIState.Success ->
-            PokemonGrid(uiState.data) {
-                onPokemonClick(it)
-            }
+            PokemonGrid(
+                uiState.data,
+                onPokemonClick = { onPokemonClick(it) },
+                onUpdateList = { onUpdateList(it) }
+            )
 
         is HomeUIState.Loading -> {
             Column(
@@ -179,11 +197,34 @@ fun Content(
 }
 
 @Composable
-fun PokemonGrid(state: InitialPokemonState, onPokemonClick: (String) -> Unit) {
+fun PokemonGrid(
+    state: InitialPokemonState,
+    onPokemonClick: (String) -> Unit,
+    onUpdateList: (String?) -> Unit
+) {
+
+    val gridState = rememberLazyGridState()
+
+    val shouldLoadMore by remember {
+        derivedStateOf {
+            val layoutInfo = gridState.layoutInfo
+            val totalItems = layoutInfo.totalItemsCount
+            val lastVisibleItem = layoutInfo.visibleItemsInfo.lastOrNull()?.index ?: 0
+
+            lastVisibleItem >= totalItems - 5
+        }
+    }
+
+    LaunchedEffect(shouldLoadMore) {
+        if (shouldLoadMore) {
+            onUpdateList(state.next20Pokemon)
+        }
+    }
 
     LazyVerticalGrid(
         columns = GridCells.Fixed(2),
         modifier = Modifier.fillMaxSize(),
+        state = gridState
     ) {
         itemsIndexed(state.allPokemon) { _, pokemon ->
             PokemonItem(pokemon) { pokemonName ->
@@ -196,7 +237,7 @@ fun PokemonGrid(state: InitialPokemonState, onPokemonClick: (String) -> Unit) {
 @Preview(name = "LoadingState")
 @Composable
 private fun HomeLoadingStatePreview() {
-    HomeScaffold(HomeUIState.Loading, onPokemonClick = {}, onSearch = {})
+    HomeScaffold(HomeUIState.Loading, onPokemonClick = {}, onSearch = {}, onUpdateList = {})
 }
 
 @Preview(name = "SuccessState")
@@ -223,11 +264,19 @@ private fun HomeSuccessStatePreview() {
         allPokemon = listOf(mockPokemon),
         next20Pokemon = null
     )
-    HomeScaffold(HomeUIState.Success(mockState), onPokemonClick = {}, onSearch = {})
+    HomeScaffold(
+        HomeUIState.Success(mockState),
+        onPokemonClick = {},
+        onSearch = {},
+        onUpdateList = {})
 }
 
 @Preview(name = "ErrorState")
 @Composable
 private fun HomeErrorStatePreview() {
-    HomeScaffold(HomeUIState.Error("Pokemon not found!"), onPokemonClick = {}, onSearch = {})
+    HomeScaffold(
+        HomeUIState.Error("Pokemon not found!"),
+        onPokemonClick = {},
+        onSearch = {},
+        onUpdateList = {})
 }
