@@ -4,7 +4,6 @@ import com.example.who_is_that_pokemon.data.dto.PokemonDTO
 import com.example.who_is_that_pokemon.data.dto.PokemonDescriptionDTO
 import com.example.who_is_that_pokemon.data.dto.StatsDTO
 import com.example.who_is_that_pokemon.data.dto.TypeSlotDTO
-import com.example.who_is_that_pokemon.screens.common.model.PokemonColorState
 import com.example.who_is_that_pokemon.screens.common.model.PokemonDescriptionState
 import com.example.who_is_that_pokemon.screens.common.model.PokemonState
 import com.example.who_is_that_pokemon.screens.common.model.SpecieDetailsState
@@ -29,9 +28,6 @@ class PokemonConverter @Inject constructor() {
         ),
         stats = buildPokemonStats(pokemonDTO.stats),
         specieDetails = SpecieDetailsState(
-            pokemonColor = PokemonColorState(
-                pokemonDTO.specieDetails?.pokemonColor?.colorName ?: ""
-            ),
             descriptions = buildPokemonDescription(pokemonDTO.specieDetails?.descriptions)
         )
     )

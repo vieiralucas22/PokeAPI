@@ -45,7 +45,7 @@ import coil.compose.AsyncImage
 import com.example.who_is_that_pokemon.R
 import com.example.who_is_that_pokemon.dsm.animation.LoadingAnimation
 import com.example.who_is_that_pokemon.dsm.composable.ErrorComponent
-import com.example.who_is_that_pokemon.screens.common.model.PokemonColorState
+import com.example.who_is_that_pokemon.dsm.extension.mix
 import com.example.who_is_that_pokemon.screens.common.model.PokemonDescriptionState
 import com.example.who_is_that_pokemon.screens.common.model.PokemonState
 import com.example.who_is_that_pokemon.screens.common.model.SpecieDetailsState
@@ -69,6 +69,7 @@ fun PokemonDetailsScreen(viewModel: PokemonDetailsViewModel, onBackButtonClick: 
 
 @Composable
 fun Content(uiState: PokemonDetailsUIState, onBackButtonClick: () -> Unit) {
+
     Scaffold(
         topBar = {
             HeaderView(uiState) {
@@ -79,12 +80,15 @@ fun Content(uiState: PokemonDetailsUIState, onBackButtonClick: () -> Unit) {
             Column {
                 when (uiState) {
                     is PokemonDetailsUIState.Success -> {
+                        val color = listOf(
+                            colorResource(uiState.data.getPokemonColor() ?: R.color.white),
+                            colorResource(R.color.white)
+                        ).mix()
+
                         Column(
                             modifier = Modifier
                                 .fillMaxSize()
-                                .background(
-                                    colorResource(uiState.data.getPokemonColorId())
-                                )
+                                .background(color)
                                 .padding(paddingValues)
                         )
                         {
@@ -159,7 +163,6 @@ fun SuccessContent(pokemonState: PokemonState) {
     MainView(pokemonState)
 }
 
-
 @Composable
 fun HeaderView(uiState: PokemonDetailsUIState, onBackButtonClick: () -> Unit) {
 
@@ -211,14 +214,15 @@ fun HeaderView(uiState: PokemonDetailsUIState, onBackButtonClick: () -> Unit) {
     }
 }
 
-
 @Composable
 fun MainView(pokemonState: PokemonState) {
-
     val types = pokemonState.types
     val stats = pokemonState.stats
     val description = pokemonState.specieDetails.descriptions[0].text
-    val colorId = pokemonState.getPokemonColorId()
+    val color = listOf(
+        colorResource(pokemonState.getPokemonColor() ?: R.color.white),
+        colorResource(R.color.white)
+    ).mix()
 
     Column(
         modifier = Modifier
@@ -245,7 +249,7 @@ fun MainView(pokemonState: PokemonState) {
             textAlign = TextAlign.Center,
             style = MaterialTheme.typography.titleMedium,
             fontSize = 24.sp,
-            color = colorResource(colorId)
+            color = color
         )
 
         Spacer(Modifier.height(16.dp))
@@ -270,14 +274,14 @@ fun MainView(pokemonState: PokemonState) {
                     textAlign = TextAlign.Center,
                     style = MaterialTheme.typography.titleMedium,
                     fontSize = 24.sp,
-                    color = colorResource(colorId)
+                    color = color
                 )
 
                 Spacer(Modifier.height(16.dp))
 
                 LazyColumn(content = {
                     itemsIndexed(stat) { _, item ->
-                        StatsComponent(item, colorId)
+                        StatsComponent(item, color)
                     }
                 })
             }
@@ -325,7 +329,6 @@ private fun SuccessStatePreview() {
             StatsState(value = 90f, stat = StatState(statName = "speed"))
         ),
         specieDetails = SpecieDetailsState(
-            pokemonColor = PokemonColorState("yellow"),
             descriptions = listOf(
                 PokemonDescriptionState(
                     text = "When several of these Pokémon gather, their electricity could build " +

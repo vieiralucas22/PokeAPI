@@ -10,6 +10,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.tooling.preview.Preview
@@ -19,9 +20,7 @@ import com.example.who_is_that_pokemon.screens.common.model.StatState
 import com.example.who_is_that_pokemon.screens.common.model.StatsState
 
 @Composable
-fun StatsComponent(state: StatsState, colorId: Int) {
-
-    val color = colorResource(colorId)
+fun StatsComponent(state: StatsState, color: Color) {
 
     Spacer(Modifier.height(8.dp))
 
@@ -65,5 +64,5 @@ private fun StatsPreview() {
         stat = StatState("hp")
     )
 
-    StatsComponent(mockState, R.color.pokemon_yellow)
+    StatsComponent(mockState, Color.Yellow)
 }

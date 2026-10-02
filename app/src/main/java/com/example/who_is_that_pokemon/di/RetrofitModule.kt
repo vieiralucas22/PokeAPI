@@ -1,6 +1,6 @@
 package com.example.who_is_that_pokemon.di
 
-import com.example.who_is_that_pokemon.constants.RetrofitConstants
+import com.example.who_is_that_pokemon.helpers.RetrofitHelper
 import com.example.who_is_that_pokemon.data.service.PokemonService
 import dagger.Module
 import dagger.Provides
@@ -28,7 +28,7 @@ class RetrofitModule {
         }
 
         return Retrofit.Builder()
-            .baseUrl(RetrofitConstants.BASE_POKE_API_URL)
+            .baseUrl(RetrofitHelper.BASE_POKE_API_URL)
             .client(httpClient.build())
             .addConverterFactory(GsonConverterFactory.create())
             .build()

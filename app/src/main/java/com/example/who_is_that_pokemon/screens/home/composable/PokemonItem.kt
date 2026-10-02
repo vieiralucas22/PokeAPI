@@ -21,22 +21,29 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
 import com.example.who_is_that_pokemon.R
-import com.example.who_is_that_pokemon.screens.common.model.PokemonColorState
+import com.example.who_is_that_pokemon.dsm.extension.mix
 import com.example.who_is_that_pokemon.screens.common.model.PokemonState
 import com.example.who_is_that_pokemon.screens.common.model.SpecieDetailsState
 import com.example.who_is_that_pokemon.screens.common.model.SpritesState
+import com.example.who_is_that_pokemon.screens.common.model.TypeSlotState
+import com.example.who_is_that_pokemon.screens.common.model.TypeState
 
 @Composable
 fun PokemonItem(state: PokemonState, onClick: (String) -> Unit) {
 
     val isPreview = LocalInspectionMode.current
 
+    val color = listOf(
+        colorResource(state.getPokemonColor() ?: R.color.white),
+        colorResource(R.color.white)
+    ).mix()
+
     Column(
         modifier = Modifier
             .heightIn(min = 200.dp)
             .padding(4.dp)
             .background(
-                colorResource(state.getPokemonColorId()),
+                color,
                 RoundedCornerShape(20.dp)
             )
             .padding(12.dp)
@@ -82,14 +89,15 @@ private fun PokemonItemPreview() {
         name = "pikachu",
         height = 0.4,
         weight = 6.0,
-        types = emptyList(),
+        types = listOf(
+            TypeSlotState(slot = 1, typeState = TypeState(name = "Electric"))
+        ),
         sprites = SpritesState(
             default = "",
             shiny = ""
         ),
         stats = emptyList(),
         specieDetails = SpecieDetailsState(
-            pokemonColor = PokemonColorState("yellow"),
             descriptions = emptyList()
         )
     )

@@ -44,11 +44,6 @@ class PokemonDetailsViewModel @Inject constructor(
         currentPokemonKey = pokemonKey
     }
 
-    override fun onCleared() {
-        super.onCleared()
-        Toast.makeText(context, "onCleared",Toast.LENGTH_SHORT).show()
-    }
-
     /* Private method */
 
     private fun loadPokemonInformation() {

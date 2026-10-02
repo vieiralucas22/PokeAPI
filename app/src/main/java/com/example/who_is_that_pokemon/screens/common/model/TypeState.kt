@@ -7,7 +7,7 @@ data class TypeState(
 ) {
     fun getTypeColor(): Int {
         return when (this.name.lowercase()) {
-            "fire" -> R.color.type_fire
+            "fire" ->(R.color.type_fire)
             "water" -> R.color.type_water
             "grass" -> R.color.type_grass
             "electric" -> R.color.type_electric

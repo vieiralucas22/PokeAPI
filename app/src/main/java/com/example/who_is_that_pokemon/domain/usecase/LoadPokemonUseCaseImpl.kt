@@ -33,22 +33,10 @@ class LoadPokemonUseCaseImpl @Inject constructor(
             val body = response.body()
 
             body?.let {
-                return getPokemonUpdatedWithSpecieDetails(it)
+                return it
             }
         }
         return pokemon
     }
 
-    private suspend fun getPokemonUpdatedWithSpecieDetails(pokemon: PokemonDTO): PokemonDTO {
-        val response = _pokemonRepository.getPokemonSpecieByName(pokemon.name)
-
-        if (response.isSuccessful && response.body() != null) {
-            val body = response.body()
-
-            body?.let {
-                return pokemon.copy(specieDetails = it)
-            }
-        }
-        return pokemon
-    }
 }

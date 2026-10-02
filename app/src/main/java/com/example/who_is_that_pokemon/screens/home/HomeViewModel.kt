@@ -2,8 +2,8 @@ package com.example.who_is_that_pokemon.screens.home
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.who_is_that_pokemon.constants.RetrofitConstants
 import com.example.who_is_that_pokemon.domain.usecase.LoadPokemonUseCase
+import com.example.who_is_that_pokemon.helpers.RetrofitHelper.Companion.getNext20PokemonInfo
 import com.example.who_is_that_pokemon.screens.home.model.HomeUIState
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -39,8 +39,8 @@ class HomeViewModel @Inject constructor(
             try {
                 _uiState.update {
                     if (data != null) {
-                        val previousPokemon = (it as? HomeUIState.Success)?.data?.allPokemon.orEmpty()
-                        val successData = data.copy(allPokemon = previousPokemon + data.allPokemon)
+                        val previousPokemonList = (it as? HomeUIState.Success)?.data?.allPokemon.orEmpty()
+                        val successData = data.copy(allPokemon = previousPokemonList + data.allPokemon)
 
                         HomeUIState.Success(successData)
                     } else
@@ -51,25 +51,6 @@ class HomeViewModel @Inject constructor(
                 HomeUIState.Error("Unknown error!")
             }
         }
-    }
-
-    private fun getNext20PokemonInfo(next20Pokemon: String?): Pair<Int, Int> {
-
-        if (next20Pokemon.isNullOrBlank()) return 0 to 20
-
-        val query =
-            next20Pokemon.replace(RetrofitConstants.BASE_POKE_API_URL, "")
-                .substringAfter("?", "")
-        val params = query.split("&")
-            .associate {
-                val (key, value) = it.split("=")
-                key to value
-            }
-
-        val offset = params["offset"]?.toIntOrNull() ?: 0
-        val limit = params["limit"]?.toIntOrNull() ?: 20
-
-        return offset to limit
     }
 
 }

@@ -45,12 +45,13 @@ import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.example.who_is_that_pokemon.R
 import com.example.who_is_that_pokemon.screens.common.model.InitialPokemonState
-import com.example.who_is_that_pokemon.screens.common.model.PokemonColorState
 import com.example.who_is_that_pokemon.screens.common.model.PokemonState
 import com.example.who_is_that_pokemon.screens.common.model.SpecieDetailsState
 import com.example.who_is_that_pokemon.screens.common.model.SpritesState
 import com.example.who_is_that_pokemon.dsm.animation.LoadingAnimation
 import com.example.who_is_that_pokemon.dsm.composable.ErrorComponent
+import com.example.who_is_that_pokemon.screens.common.model.TypeSlotState
+import com.example.who_is_that_pokemon.screens.common.model.TypeState
 import com.example.who_is_that_pokemon.screens.home.composable.PokemonItem
 import com.example.who_is_that_pokemon.screens.home.model.HomeUIState
 
@@ -211,7 +212,7 @@ fun PokemonGrid(
             val totalItems = layoutInfo.totalItemsCount
             val lastVisibleItem = layoutInfo.visibleItemsInfo.lastOrNull()?.index ?: 0
 
-            lastVisibleItem >= totalItems - 5
+            lastVisibleItem >= totalItems - 15
         }
     }
 
@@ -248,14 +249,15 @@ private fun HomeSuccessStatePreview() {
         name = "pikachu",
         height = 0.4,
         weight = 6.0,
-        types = emptyList(),
+        types = listOf(
+            TypeSlotState(slot = 1, typeState = TypeState(name = "Electric"))
+        ),
         sprites = SpritesState(
             default = "",
             shiny = ""
         ),
         stats = emptyList(),
         specieDetails = SpecieDetailsState(
-            pokemonColor = PokemonColorState("yellow"),
             descriptions = emptyList()
         )
     )
