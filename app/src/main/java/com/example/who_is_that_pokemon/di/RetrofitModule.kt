@@ -1,6 +1,6 @@
 package com.example.who_is_that_pokemon.di
 
-import com.example.who_is_that_pokemon.helpers.RetrofitHelper
+import com.example.who_is_that_pokemon.common.helpers.RetrofitHelper
 import com.example.who_is_that_pokemon.data.service.PokemonService
 import dagger.Module
 import dagger.Provides

@@ -1,4 +1,4 @@
-package com.example.who_is_that_pokemon.helpers
+package com.example.who_is_that_pokemon.common.helpers
 
 class RetrofitHelper {
 

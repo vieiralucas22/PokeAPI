@@ -3,7 +3,7 @@ package com.example.who_is_that_pokemon.screens.home
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.who_is_that_pokemon.domain.usecase.LoadPokemonUseCase
-import com.example.who_is_that_pokemon.helpers.RetrofitHelper.Companion.getNext20PokemonInfo
+import com.example.who_is_that_pokemon.common.helpers.RetrofitHelper.Companion.getNext20PokemonInfo
 import com.example.who_is_that_pokemon.screens.home.model.HomeUIState
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
