@@ -19,8 +19,7 @@ import javax.inject.Inject
 
 @HiltViewModel
 class PokemonDetailsViewModel @Inject constructor(
-    private val _findPokemonUseCase: FindPokemonUseCase,
-    @ApplicationContext val context: Context
+    private val findPokemonUseCase: FindPokemonUseCase
 ) : ViewModel() {
 
     /* Properties */
@@ -51,7 +50,7 @@ class PokemonDetailsViewModel @Inject constructor(
         viewModelScope.launch {
 
             try {
-                val data = _findPokemonUseCase.invoke(currentPokemonKey)
+                val data = findPokemonUseCase(currentPokemonKey)
 
                 _uiState.update {
                     if (data != null)

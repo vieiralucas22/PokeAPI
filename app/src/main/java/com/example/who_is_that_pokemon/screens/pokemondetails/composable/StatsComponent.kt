@@ -29,9 +29,7 @@ fun StatsComponent(state: StatsState, color: Color) {
         verticalAlignment = Alignment.CenterVertically
     ) {
         Text(
-            text = state.stat.statName.replaceFirstChar { it.uppercase() }
-                .replace("Special-", "Sp.") //TODO: Avoid this code
-                .replace("attack", "atk").replace("defense", "def"),
+            text = state.stat.getFormattedStatName(),
             style = MaterialTheme.typography.titleMedium,
             modifier = Modifier.weight(0.24f),
             color = color
@@ -64,5 +62,5 @@ private fun StatsPreview() {
         stat = StatState("hp")
     )
 
-    StatsComponent(mockState, Color.Yellow)
+    StatsComponent(mockState, Color.Gray)
 }

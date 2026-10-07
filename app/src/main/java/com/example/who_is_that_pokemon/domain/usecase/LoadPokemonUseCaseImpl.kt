@@ -7,19 +7,19 @@ import com.example.who_is_that_pokemon.screens.home.converter.NextPokemonConvert
 import javax.inject.Inject
 
 class LoadPokemonUseCaseImpl @Inject constructor(
-    private val _pokemonRepository: PokemonRepository,
-    private val _converterNextPokemon: NextPokemonConverter
+    private val pokemonRepository: PokemonRepository,
+    private val converterNextPokemon: NextPokemonConverter
 ) : LoadPokemonUseCase {
 
-    override suspend fun invoke(offset: Int, limit: Int): InitialPokemonState? {
+    override suspend operator fun invoke(offset: Int, limit: Int): InitialPokemonState? {
 
-        val response = _pokemonRepository.getNext20Pokemon(offset, limit)
+        val response = pokemonRepository.getNext20Pokemon(offset, limit)
 
         if (response.isSuccessful && response.body() != null) {
             val body = response.body()
             body?.let { pokemon ->
                 val detailedPokemon = pokemon.allPokemon.map { getPokemonDetails(it) }
-                return _converterNextPokemon.convert(pokemon.copy(allPokemon = detailedPokemon))
+                return converterNextPokemon.convert(pokemon.copy(allPokemon = detailedPokemon))
             }
         }
 
@@ -27,7 +27,7 @@ class LoadPokemonUseCaseImpl @Inject constructor(
     }
 
     private suspend fun getPokemonDetails(pokemon: PokemonDTO): PokemonDTO {
-        val response = _pokemonRepository.getPokemonByNameOrId(pokemon.name)
+        val response = pokemonRepository.getPokemonByNameOrId(pokemon.name)
 
         if (response.isSuccessful && response.body() != null) {
             val body = response.body()

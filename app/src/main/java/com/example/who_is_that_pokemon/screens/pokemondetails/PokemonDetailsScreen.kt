@@ -98,6 +98,7 @@ fun Content(uiState: PokemonDetailsUIState, onBackButtonClick: () -> Unit) {
 
                     is PokemonDetailsUIState.Loading -> Column(
                         modifier = Modifier
+                            .background(colorResource(R.color.white))
                             .fillMaxSize(),
                         horizontalAlignment = Alignment.CenterHorizontally,
                         verticalArrangement = Arrangement.Center
@@ -218,7 +219,7 @@ fun HeaderView(uiState: PokemonDetailsUIState, onBackButtonClick: () -> Unit) {
 fun MainView(pokemonState: PokemonState) {
     val types = pokemonState.types
     val stats = pokemonState.stats
-    val description = pokemonState.specieDetails.descriptions[0].text
+    val description = pokemonState.specieDetails.getFormattedDescription()
     val color = listOf(
         colorResource(pokemonState.getPokemonColor() ?: R.color.white),
         colorResource(R.color.white)
@@ -232,59 +233,57 @@ fun MainView(pokemonState: PokemonState) {
 
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        types.let { type -> // Todo: Consertar o let depois não é necessario
-            if (types.isNotEmpty())
-                LazyRow(content = {
-                    itemsIndexed(type) { _, item ->
-                        TypeComponent(item.typeState)
-                    }
-                })
+
+        if (types.isNotEmpty())
+            LazyRow(content = {
+                itemsIndexed(types) { _, item ->
+                    TypeComponent(item.typeState)
+                }
+            })
+
+        Spacer(Modifier.height(16.dp))
+
+        description?.let {
+
+            Text(
+                modifier = Modifier.fillMaxWidth(),
+                text = "About",
+                textAlign = TextAlign.Center,
+                style = MaterialTheme.typography.titleMedium,
+                fontSize = 24.sp,
+                color = color
+            )
+
+            Spacer(Modifier.height(16.dp))
+
+            Text(
+                modifier = Modifier.fillMaxWidth(),
+                text = description,
+                textAlign = TextAlign.Center,
+                style = MaterialTheme.typography.titleMedium,
+                fontSize = 16.sp
+            )
+
+            Spacer(Modifier.height(16.dp))
         }
 
-        Spacer(Modifier.height(16.dp))
+        if (stats.isNotEmpty()) {
+            Text(
+                modifier = Modifier.fillMaxWidth(),
+                text = "Base Stats",
+                textAlign = TextAlign.Center,
+                style = MaterialTheme.typography.titleMedium,
+                fontSize = 24.sp,
+                color = color
+            )
 
-        Text(
-            modifier = Modifier.fillMaxWidth(),
-            text = "About",
-            textAlign = TextAlign.Center,
-            style = MaterialTheme.typography.titleMedium,
-            fontSize = 24.sp,
-            color = color
-        )
+            Spacer(Modifier.height(16.dp))
 
-        Spacer(Modifier.height(16.dp))
-
-        Text(
-            modifier = Modifier.fillMaxWidth(),
-            text = description.replace("\n", " ")
-                .replace("\u000c", " "),
-            textAlign = TextAlign.Center,
-            style = MaterialTheme.typography.titleMedium,
-            fontSize = 16.sp
-        )
-
-        Spacer(Modifier.height(16.dp))
-
-        stats.let { stat ->
-
-            if (stat.isNotEmpty()) {
-                Text(
-                    modifier = Modifier.fillMaxWidth(),
-                    text = "Base Stats",
-                    textAlign = TextAlign.Center,
-                    style = MaterialTheme.typography.titleMedium,
-                    fontSize = 24.sp,
-                    color = color
-                )
-
-                Spacer(Modifier.height(16.dp))
-
-                LazyColumn(content = {
-                    itemsIndexed(stat) { _, item ->
-                        StatsComponent(item, color)
-                    }
-                })
-            }
+            LazyColumn(content = {
+                itemsIndexed(stats) { _, item ->
+                    StatsComponent(item, color)
+                }
+            })
         }
     }
 }

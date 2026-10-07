@@ -138,7 +138,6 @@ fun Content(
 
     Spacer(modifier = Modifier.height(16.dp))
 
-    // TODO: Should this state be in the UIState?
     OutlinedTextField(
         value = pokemonSearch,
         onValueChange = { pokemonSearch = it },

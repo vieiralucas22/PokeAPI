@@ -17,7 +17,7 @@ import javax.inject.Inject
 
 @HiltViewModel
 class HomeViewModel @Inject constructor(
-    private val _loadPokemonUseCase: LoadPokemonUseCase
+    private val loadPokemonUseCase: LoadPokemonUseCase
 ) : ViewModel() {
 
     private val _uiState: MutableStateFlow<HomeUIState> = MutableStateFlow(HomeUIState.Loading)
@@ -34,7 +34,7 @@ class HomeViewModel @Inject constructor(
         viewModelScope.launch {
             val (offset, limit) = getNext20PokemonInfo(nextPokemon)
 
-            val data = _loadPokemonUseCase.invoke(offset, limit)
+            val data = loadPokemonUseCase(offset, limit)
 
             try {
                 _uiState.update {
