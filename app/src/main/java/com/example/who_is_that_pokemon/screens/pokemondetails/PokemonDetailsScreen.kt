@@ -90,8 +90,7 @@ fun Content(uiState: PokemonDetailsUIState, onBackButtonClick: () -> Unit) {
                                 .fillMaxSize()
                                 .background(color)
                                 .padding(paddingValues)
-                        )
-                        {
+                        ) {
                             SuccessContent(uiState.data)
                         }
                     }
@@ -116,7 +115,7 @@ fun Content(uiState: PokemonDetailsUIState, onBackButtonClick: () -> Unit) {
                         horizontalAlignment = Alignment.CenterHorizontally,
                         verticalArrangement = Arrangement.Center
                     ) {
-                        ErrorComponent("Pokemon not found!")
+                        ErrorComponent(uiState.message)
                     }
                 }
             }

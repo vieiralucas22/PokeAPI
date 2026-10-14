@@ -32,23 +32,25 @@ class HomeViewModel @Inject constructor(
 
     fun loadPokemon(nextPokemon: String? = null) {
         viewModelScope.launch {
-            val (offset, limit) = getNext20PokemonInfo(nextPokemon)
-
-            val data = loadPokemonUseCase(offset, limit)
-
             try {
+                val (offset, limit) = getNext20PokemonInfo(nextPokemon)
+
+                val data = loadPokemonUseCase(offset, limit)
+
                 _uiState.update {
                     if (data != null) {
-                        val previousPokemonList = (it as? HomeUIState.Success)?.data?.allPokemon.orEmpty()
-                        val successData = data.copy(allPokemon = previousPokemonList + data.allPokemon)
+                        val previousPokemonList =
+                            (it as? HomeUIState.Success)?.data?.allPokemon.orEmpty()
+                        val successData =
+                            data.copy(allPokemon = previousPokemonList + data.allPokemon)
 
                         HomeUIState.Success(successData)
                     } else
                         HomeUIState.Error("Pokemon not found!")
                 }
 
-            } catch (_: Exception) {
-                HomeUIState.Error("Unknown error!")
+            } catch (e: Exception) {
+                _uiState.update { HomeUIState.Error(e.message.toString()) }
             }
         }
     }

@@ -1,13 +1,10 @@
 package com.example.who_is_that_pokemon.screens.pokemondetails
 
-import android.content.Context
-import android.widget.Toast
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.who_is_that_pokemon.domain.usecase.FindPokemonUseCase
 import com.example.who_is_that_pokemon.screens.pokemondetails.model.PokemonDetailsUIState
 import dagger.hilt.android.lifecycle.HiltViewModel
-import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
@@ -46,9 +43,7 @@ class PokemonDetailsViewModel @Inject constructor(
     /* Private method */
 
     private fun loadPokemonInformation() {
-
         viewModelScope.launch {
-
             try {
                 val data = findPokemonUseCase(currentPokemonKey)
 
@@ -59,10 +54,9 @@ class PokemonDetailsViewModel @Inject constructor(
                         PokemonDetailsUIState.Error("No pokemon")
                 }
 
-            } catch (_: Exception) {
-                PokemonDetailsUIState.Error("No pokemon error")
+            } catch (e: Exception) {
+                _uiState.update { PokemonDetailsUIState.Error(e.message.toString()) }
             }
         }
     }
-
 }
